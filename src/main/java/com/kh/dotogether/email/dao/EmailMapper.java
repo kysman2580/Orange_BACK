@@ -1,0 +1,25 @@
+package com.kh.dotogether.email.dao;
+
+import java.time.LocalDateTime;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.kh.dotogether.email.EmailVerification;
+
+@Mapper
+public interface EmailMapper {
+	
+	void insertVerification(
+			@Param("email") String email,
+			@Param("code") String code, 
+			@Param("expireAt") LocalDateTime expireAt);
+	
+	EmailVerification findVerificationByEmail(@Param("email") String email);
+	
+	int deleteVerificationByEmail(@Param("email") String email);
+	
+	boolean existsByUserIdAndEmail(
+			@Param("userId") String userId,
+			@Param("userEmail") String userEmail);
+}
