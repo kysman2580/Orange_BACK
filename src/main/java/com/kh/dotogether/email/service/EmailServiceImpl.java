@@ -5,6 +5,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.kh.dotogether.exception.exceptions.CustomException;
+import com.kh.dotogether.global.enums.ErrorCode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +28,10 @@ public class EmailServiceImpl implements EmailService {
 		message.setFrom(fromEmail);
 		message.setSubject("[DoTogether] 이메일 인증 코드 안내");
 		message.setText("인증 코드: " + code);
+		
+		if(true) {
+			throw new CustomException(ErrorCode.INSERT_ERROR);
+		}
 		
 		mailSender.send(message);
 		log.info("이메일 인증 코드 발송 완료 -> {}", email);
