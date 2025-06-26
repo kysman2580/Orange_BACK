@@ -1,5 +1,7 @@
 package com.kh.dotogether.member.model.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -63,5 +65,14 @@ public interface MemberMapper {
      * @return 업데이트 결과
      */
     int updatePassword(@Param("userNo") Long userNo, @Param("userPw") String userPw);
+    
+    /**
+     * 아이디 찾기(이름, 이메일)
+     * @param userName
+     * @param userEmail
+     * @return
+     */
+    MemberDTO findByNameAndEmail(@Param("userName") String userName, @Param("userEmail") String userEmail);
+	MemberDTO findByName(@Param("userName") String userName);
 	
 }

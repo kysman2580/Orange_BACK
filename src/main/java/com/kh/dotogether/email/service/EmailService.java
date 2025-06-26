@@ -7,6 +7,6 @@ public interface EmailService {
 	 * @param email
 	 * @param verificationCode
 	 */
-	void sendVerificationEmail(String toEmail, String verificationCode);
+	void sendVerificationEmail(String email, String code);
 
 }

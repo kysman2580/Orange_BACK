@@ -1,5 +1,7 @@
 package com.kh.dotogether.member.model.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +12,7 @@ import com.kh.dotogether.exception.UserNotFoundException;
 import com.kh.dotogether.exception.UserUpdateFailedException;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.password.service.PasswordService;
 import com.kh.dotogether.token.model.service.TokenService;
 
@@ -143,5 +146,42 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return authorizationHeader.substring(7); // "Bearer " 제거
 	}
+
+	
+	/**
+	 * 아이디 찾기(이름, 이메일)
+	 */
+	@Override
+	public UserIdResponseDTO findUserId(String userName, String userEmail) {
+		MemberDTO member = memberMapper.findByName(userName);
+
+	    if (member == null) {
+	        throw new UserNotFoundException("존재하지 않는 회원입니다.");
+	    }
+		
+	    // 복호화
+	    String decryptedEmail = encryptionUtil.decrypt(member.getUserEmail());
+
+	    if (!userEmail.equals(decryptedEmail)) {
+	        throw new UserNotFoundException("이메일이 일치하지 않습니다.");
+	    }
+
+	    log.info("아이디 찾기 성공 - userId: {}", member.getUserId());
+	    return new UserIdResponseDTO(member.getUserId());
+	}
+
+	/**
+	 * 비밀번호 찾기 1단계 - 아이디 조회
+	 */
+	@Override
+	public MemberDTO findByUserId(String userId) {
+		MemberDTO member = memberMapper.findByUserId(userId);
+
+	    if (member == null) {
+	        throw new UserNotFoundException("존재하지 않는 아이디입니다.");
+	    }
+		return memberMapper.findByUserId(userId);
+	}
+
 
 }

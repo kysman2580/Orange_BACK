@@ -1,9 +1,7 @@
 package com.kh.dotogether.member.controller;
 
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.dotogether.common.ResponseData;
+import com.kh.dotogether.email.dto.EmailVerificationDTO;
+import com.kh.dotogether.exception.UserNotFoundException;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.member.model.service.MemberService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -115,5 +118,60 @@ public class MemberController {
                 .items(null)
                 .build());
     }
+    
+    
+    /**
+     * 아이디 찾기
+     * @param userName
+     * @param userEmail
+     * @return
+     */
+	@GetMapping("/find-id/{userName}")
+	public ResponseEntity<ResponseData<Object>> findUserId(
+			@PathVariable("userName") String userName,
+			@RequestParam(name="userEmail") @Email(message="이메일 형식이 올바르지 않습니다.") String userEmail) {
+		UserIdResponseDTO result = memberService.findUserId(userName, userEmail);
+		
+		return ResponseEntity.ok(ResponseData.<Object>builder()
+				.code("200")
+				.message("아이디 조회 성공")
+                .items(result)
+                .build());
+	}
+	
+	/**
+	 * 비밀번호 찾기(1단계 - 아이디 조회)
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping("/find-pw/{userId}")
+	public ResponseEntity<ResponseData<Object>> findPasswordStep1(@PathVariable("userId") String userId){
+		log.info("비밀번호 찾기 1단계 - 아이디 확인 요청 : {}", userId);
+		memberService.findByUserId(userId);
+		
+		return ResponseEntity.ok(ResponseData.<Object>builder()
+				.code("200")
+				.message("아이디 확인 성공")
+				.items(Map.of("userId", userId))
+                .build());
+	}
+	
+	
+//	@PostMapping("/send-code")
+//	public ResponseEntity<ResponseData<Object>> senderVerificationCode(@Valid @RequestBody EmailVerificationDTO dto){
+//		return null;
+//	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

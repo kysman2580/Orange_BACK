@@ -76,21 +76,26 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public void logout(String authorizationHeader) {
-		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			throw new IllegalArgumentException("유효한 인증 정보가 없습니다.");
+		try {
+			if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+				throw new IllegalArgumentException("유효한 인증 정보가 없습니다.");
+			}
+			
+			String token = authorizationHeader.substring(7); // "Bearer " 제거
+			String userId = jwtUtil.getUserIdFromToken(token); // userId 추출
+			
+			// userId 기준으로 member 조회 + userNo 가져옴
+			MemberDTO member = memberMapper.findByUserId(userId);
+			if(member == null) {
+				throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+			}
+			Long userNo = member.getUserNo();
+			tokenService.deleteUserToken(userNo);
+			log.info("로그아웃 처리 완료: userNo = {}, userId = {}", userNo, userId);
+		} catch(Exception e) {
+			// 토큰이 만료됐으면 세션도 끝났다고 보면 되므로 별도 조치 없이 로그아웃 처리
+			log.warn("accessToken 파싱 실패 또는 만료됨, 로그아웃 강제 처리: {}", e.getMessage());
 		}
-		
-		String token = authorizationHeader.substring(7); // "Bearer " 제거
-		String userId = jwtUtil.getUserIdFromToken(token); // userId 추출
-		
-		// userId 기준으로 member 조회 + userNo 가져옴
-		MemberDTO member = memberMapper.findByUserId(userId);
-		if(member == null) {
-			throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-		}
-		Long userNo = member.getUserNo();
-		tokenService.deleteUserToken(userNo);
-		log.info("로그아웃 처리 완료: userNo = {}, userId = {}", userNo, userId);
 	}
 
 }

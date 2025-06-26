@@ -119,5 +119,25 @@
 		  WHERE
 		  		USER_NO = #{userNo}
 	</update>
+	
+	<!--아이디 찾기-->
+	<select id="findByNameAndEmail" parameterType="MemberDTO">
+		SELECT
+				USER_ID
+		  FROM
+		  		TB_USER
+		 WHERE
+		 		USER_NAME = #{userName}
+		   AND
+		   		USER_EMAIL = #{userEmail}
+	</select>
+	<select id="findByName" parameterType="string" resultType="MemberDTO">
+		SELECT
+				USER_ID, USER_EMAIL
+		  FROM
+		  		TB_USER
+		 WHERE
+		 		USER_NAME = #{userName}
+	</select>
 
 </mapper>

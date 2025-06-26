@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.kh.dotogether.email.EmailVerification;
+import com.kh.dotogether.email.dto.EmailVerificationDTO;
 
 @Mapper
 public interface EmailMapper {
@@ -15,7 +15,7 @@ public interface EmailMapper {
 			@Param("code") String code, 
 			@Param("expireAt") LocalDateTime expireAt);
 	
-	EmailVerification findVerificationByEmail(@Param("email") String email);
+	EmailVerificationDTO findVerificationByEmail(@Param("email") String email);
 	
 	int deleteVerificationByEmail(@Param("email") String email);
 	

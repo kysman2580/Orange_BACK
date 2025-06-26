@@ -19,14 +19,14 @@ public class EmailServiceImpl implements EmailService {
 	private String fromEmail;
 	
 	@Override
-	public void sendVerificationEmail(String toEmail, String verificationCode) {
+	public void sendVerificationEmail(String email, String code) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(toEmail);
+		message.setTo(email);
 		message.setFrom(fromEmail);
 		message.setSubject("[DoTogether] 이메일 인증 코드 안내");
-		message.setText("인증 코드: " + verificationCode);
+		message.setText("인증 코드: " + code);
 		
 		mailSender.send(message);
-		log.info("이메일 인증 코드 발송 완료 -> {}", toEmail);
+		log.info("이메일 인증 코드 발송 완료 -> {}", email);
 	}
 }
