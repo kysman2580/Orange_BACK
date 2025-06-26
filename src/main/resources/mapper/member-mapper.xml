@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.member.model.dao.MemberMapper">
+
+	<insert id="signUp" parameterType="MemberDTO">
+		INSERT INTO
+			TB_USER(
+			    USER_NO
+			  , USER_ID
+			  , USER_PW
+			  , USER_NAME
+			  , USER_EMAIL
+			  , USER_PHONE
+			  , USER_ADDRESS1
+			  , USER_ADDRESS2
+			  , USER_ROLE
+			  , USER_STATUS
+			  , JOIN_DATE
+			  , UPDATE_DATE
+			)
+			VALUES(
+			    SEQ_USER_NO.NEXTVAL
+			  , #{userId}
+			  , #{userPw}
+			  , #{userName}
+			  , #{userEmail}
+			  , #{userPhone}
+			  , #{userAddress1}
+			  , #{userAddress2}
+			  , DEFAULT
+			  , DEFAULT
+			  , SYSDATE
+			  , SYSDATE
+			)
+	</insert>
+	
+	<!--아이디 중복체크-->
+	<select id="existsByUserId" resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   TB_USER
+		 WHERE
+		       USER_ID = #{userId}
+	</select>
+	
+	<!--이메일 중복체크-->
+	<select id="existsByEmail" resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   TB_USER
+		 WHERE
+		       USER_EMAIL = #{userEmail}
+	</select>
+	
+	<!--연락처 중복체크-->
+	<select id="existsByPhone" resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   TB_USER
+		 WHERE
+		       USER_PHONE = #{userPhone}
+	</select>
+	
+	<select id="findByUserNo" resultType="MemberDTO">
+		SELECT
+			     USER_NO
+			   , USER_ID
+			   , USER_PW
+			   , USER_NAME
+			   , USER_ROLE
+			   , USER_EMAIL
+			   , USER_PHONE
+			   , USER_STATUS
+		  FROM
+		  	   TB_USER
+		 WHERE 
+		       USER_NO = #{userNo}
+	</select>
+	
+	<select id="findByUserId" resultType="MemberDTO">
+		SELECT
+			     USER_NO
+			   , USER_ID
+			   , USER_PW
+			   , USER_NAME
+			   , USER_ROLE
+			   , USER_EMAIL
+			   , USER_PHONE
+			   , USER_STATUS
+		  FROM
+		       TB_USER
+		 WHERE 
+		       USER_ID = #{userId}
+	</select>
+	
+	<!--회원탈퇴(status 업데이트)-->
+	<update id="deleteUser" parameterType="MemberDTO">
+		UPDATE
+				TB_USER
+		   SET
+		        USER_STATUS = 'N'
+		      , UPDATE_DATE = SYSDATE
+		 WHERE
+		 		USER_NO = #{userNo}
+	</update>
+	
+	<!--비밀번호 변경-->
+	<update id="updatePassword" parameterType="map">
+		UPDATE
+				TB_USER
+		   SET
+		   		USER_PW = #{userPw}
+		   	  , UPDATE_DATE = SYSDATE
+		  WHERE
+		  		USER_NO = #{userNo}
+	</update>
+
+</mapper>

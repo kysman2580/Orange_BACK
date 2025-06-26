@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 #Fri Jun 20 14:35:05 KST 2025
 host=User1
 process-id=22076
 user=PC
+=======
+#Fri Jun 20 09:16:11 KST 2025
+host=DESKTOP-8NQJSVS
+process-id=15476
+user=user1
+>>>>>>> 72cb21fe01a41e3511b63dd9c95a7bb929c8fa08
