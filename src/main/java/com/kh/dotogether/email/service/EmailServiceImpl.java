@@ -29,10 +29,6 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject("[DoTogether] 이메일 인증 코드 안내");
 		message.setText("인증 코드: " + code);
 		
-		if(true) {
-			throw new CustomException(ErrorCode.INSERT_ERROR);
-		}
-		
 		mailSender.send(message);
 		log.info("이메일 인증 코드 발송 완료 -> {}", email);
 	}

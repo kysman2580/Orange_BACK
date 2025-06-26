@@ -1,5 +1,7 @@
 package com.kh.dotogether.member.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -13,12 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kh.dotogether.common.ResponseData;
-import com.kh.dotogether.email.dto.EmailVerificationDTO;
-import com.kh.dotogether.exception.UserNotFoundException;
 import com.kh.dotogether.member.model.dto.MemberDTO;
 import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.member.model.service.MemberService;
+import com.kh.dotogether.util.ResponseData;
+import com.kh.dotogether.util.ResponseUtil;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -39,14 +40,14 @@ public class MemberController {
 	 * @return
 	 */
 	@PostMapping
-	public ResponseEntity<ResponseData<Object>> signUp(@RequestBody @Valid MemberDTO memberDTO) {
+	public ResponseEntity<ResponseData> signUp(@RequestBody @Valid MemberDTO memberDTO) {
 		memberService.signUp(memberDTO);
 		log.info("회원가입 성공: {}", memberDTO.getUserId());
 		
-		return ResponseEntity.ok(ResponseData.<Object>builder()
+		return ResponseEntity.ok(ResponseData.builder()
 		            .code("200")
 		            .message("회원가입에 성공했습니다.")
-		            .items(null)
+		            .items(Collections.emptyList())
 		            .build()
 		    );
 	}
@@ -57,16 +58,16 @@ public class MemberController {
 	 * @return
 	 */
 	@DeleteMapping("/{userNo}")
-	public ResponseEntity<ResponseData<Object>> deleteUser(
+	public ResponseEntity<ResponseData> deleteUser(
 					@PathVariable("userNo") Long userNo,
 					@RequestHeader(value = "Authorization") String authorizationHeader) {
 		
 		memberService.deleteUser(userNo, authorizationHeader);
 		
-		return ResponseEntity.ok(ResponseData.<Object>builder()
+		return ResponseEntity.ok(ResponseData.builder()
 		            .code("200")
 		            .message("회원탈퇴가 정상적으로 처리되었습니다.")
-		            .items(null)
+		            .items(Collections.emptyList())
 		            .build()
 		    );
 	}
@@ -75,48 +76,27 @@ public class MemberController {
      * 아이디 중복 확인
      */
     @GetMapping("/check-id/{userId}")
-    public ResponseEntity<ResponseData<Object>> checkId(@PathVariable("userId") String userId) {
+    public ResponseEntity<ResponseData> checkId(@PathVariable("userId") String userId) {
         boolean duplicated = memberService.isUserIdDuplicated(userId);
-
-        String message = duplicated ? "이미 사용중인 아이디입니다." : "사용 가능한 아이디입니다.";
-
-        return ResponseEntity.ok(ResponseData.<Object>builder()
-                .code(duplicated ? "409" : "200")
-                .message(message)
-                .items(null)
-                .build());
+        return ResponseUtil.buildDuplicationResponse(duplicated, "아이디");
     }
 
     /**
      * 이메일 중복 확인
      */
     @GetMapping("/check-email/{email}")
-    public ResponseEntity<ResponseData<Object>> checkEmail(@PathVariable("email") String email) {
+    public ResponseEntity<ResponseData> checkEmail(@PathVariable("email") String email) {
         boolean duplicated = memberService.isEmailDuplicated(email);
-
-        String message = duplicated ? "이미 사용중인 이메일입니다." : "사용 가능한 이메일입니다.";
-
-        return ResponseEntity.ok(ResponseData.<Object>builder()
-                .code(duplicated ? "409" : "200")
-                .message(message)
-                .items(null)
-                .build());
+        return ResponseUtil.buildDuplicationResponse(duplicated, "이메일");
     }
 
     /**
      * 연락처 중복 확인
      */
     @GetMapping("/check-phone/{phone}")
-    public ResponseEntity<ResponseData<Object>> checkPhone(@PathVariable("phone") String phone) {
+    public ResponseEntity<ResponseData> checkPhone(@PathVariable("phone") String phone) {
         boolean duplicated = memberService.isPhoneDuplicated(phone);
-
-        String message = duplicated ? "이미 사용중인 연락처입니다." : "사용 가능한 연락처입니다.";
-
-        return ResponseEntity.ok(ResponseData.<Object>builder()
-                .code(duplicated ? "409" : "200")
-                .message(message)
-                .items(null)
-                .build());
+        return ResponseUtil.buildDuplicationResponse(duplicated, "연락처");
     }
     
     
@@ -127,15 +107,16 @@ public class MemberController {
      * @return
      */
 	@GetMapping("/find-id/{userName}")
-	public ResponseEntity<ResponseData<Object>> findUserId(
+	public ResponseEntity<ResponseData> findUserId(
 			@PathVariable("userName") String userName,
 			@RequestParam(name="userEmail") @Email(message="이메일 형식이 올바르지 않습니다.") String userEmail) {
+		
 		UserIdResponseDTO result = memberService.findUserId(userName, userEmail);
 		
-		return ResponseEntity.ok(ResponseData.<Object>builder()
+		return ResponseEntity.ok(ResponseData.builder()
 				.code("200")
 				.message("아이디 조회 성공")
-                .items(result)
+                .items(List.of(result))
                 .build());
 	}
 	
@@ -145,14 +126,14 @@ public class MemberController {
 	 * @return
 	 */
 	@GetMapping("/find-pw/{userId}")
-	public ResponseEntity<ResponseData<Object>> findPasswordStep1(@PathVariable("userId") String userId){
+	public ResponseEntity<ResponseData> findPasswordStep1(@PathVariable("userId") String userId){
 		log.info("비밀번호 찾기 1단계 - 아이디 확인 요청 : {}", userId);
 		memberService.findByUserId(userId);
 		
-		return ResponseEntity.ok(ResponseData.<Object>builder()
+		return ResponseEntity.ok(ResponseData.builder()
 				.code("200")
 				.message("아이디 확인 성공")
-				.items(Map.of("userId", userId))
+				.items(List.of(Map.of("userId", userId)))
                 .build());
 	}
 	
