@@ -1,10 +1,7 @@
 package com.kh.dotogether.member.model.service;
 
-import org.springframework.http.ResponseEntity;
-
 import com.kh.dotogether.member.model.dto.MemberDTO;
 import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
-import com.kh.dotogether.util.ResponseData;
 
 public interface MemberService {
 
