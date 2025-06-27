@@ -77,12 +77,18 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/check-id/**").permitAll()
                 .requestMatchers("/api/members/check-email/**").permitAll()
                 .requestMatchers("/api/members/check-phone/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/teams").permitAll()
 
                 // 로그인 필요
                 .requestMatchers(HttpMethod.DELETE, "/api/members/{id}").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/teams",
+                								  "/api/teams/join").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/teams/created-team",
+                								 "/api/teams/my-team",
+                								 "/api/teams/member").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
-
+                
                 // 정적 자원
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 

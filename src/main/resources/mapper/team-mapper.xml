@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.kh.dotogether.team.model.dao.TeamMapper">
+
+	<!-- 요청한 사용자의 팀이 5팀을 이상인지 조회 (이상 : true | 미만 : false) -->
+	<select id="countUserTeams"
+			parameterType="long"
+			resultType="boolean">
+		SELECT
+    		CASE 
+        		WHEN 
+            		COUNT(*) &lt; 5
+        		THEN 
+             		0
+        		ELSE
+             		1
+             END
+		FROM
+    		TB_TEAM_MEMBER
+		WHERE
+    		USER_NO = #{userNo}
+	</select>
+	
+	<!-- 팀생성 -->
+	<insert id="setTeam"
+			parameterType="Team">
+		INSERT INTO
+		    TB_TEAM
+		VALUES(
+		    #{teamId},
+		    #{userNo},
+		    #{title},
+		    #{content},
+		    #{category},
+		    SYSDATE
+		)
+	</insert>
+	
+	<!-- 팀 멤버로 추가 -->
+	<insert id="setTeamMember"
+			parameterType="Team">
+		INSERT INTO
+		    TB_TEAM_MEMBER
+		VALUES(
+		    #{teamId},
+		    #{userNo},
+		    SYSDATE
+		)
+	</insert>
+	
+	<!-- 팀정보 + 팀원 정보 조회 resultMap -->
+	<resultMap id="selectTeamList" type="TeamDTO">
+		<id property="teamId" column="teamId" />
+		<result property="teamLeader" column="teamLeader" />
+		<result property="leaderName" column="leaderName" />		
+    	<result property="title" column="title" />
+    	<result property="content" column="content" />
+	    <result property="category" column="category" />
+	    <result property="currentDate" column="currentDate" />
+	    <result property="canApplyToTeam" column="canApplyToTeam" />
+	    <collection property="teamMemberList" column="teamId" ofType="TeamMemberDTO"  select="findTeamMemberList" />
+	</resultMap>
+	
+	<!-- 모든 팀 조회 -->
+	<select id="findTeamList" resultMap="selectTeamList">
+		SELECT *
+		FROM (
+			SELECT 
+			    T.TEAM_ID teamId, 
+			    T.TEAM_LEADER_NO teamLeader,
+			    U.USER_NAME leaderName,
+			    T.TEAM_NAME title,
+			    T.TEAM_CONTENT content,
+			    T.TEAM_CATEGORY category,
+			    T.CURRENT_DATE currentDate,
+			    (
+			        SELECT
+			            CASE WHEN COUNT(*) > 0 THEN 0 ELSE 1 END
+			        FROM
+			            TB_TEAM_APPLICANT S
+			        WHERE
+			            S.APPLICANT_NO = #{userNo}
+			        AND 
+			            S.TEAM_ID = T.TEAM_ID
+			    ) AS canApplyToTeam
+			FROM
+			    TB_TEAM T
+			JOIN 
+				TB_USER U ON (T.TEAM_LEADER_NO = U.USER_NO)
+			<if test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
+				WHERE
+					T.CURRENT_DATE &lt; TO_DATE(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS')
+			</if>
+			<if test=" !('all'.equals(category)) " >
+				<choose>
+					<when test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
+						AND
+					</when>
+					<otherwise>
+						WHERE
+					</otherwise>
+				</choose>
+			        T.TEAM_CATEGORY = #{category}
+			</if>
+			ORDER BY
+			    T.CURRENT_DATE DESC
+		)
+		WHERE 
+			ROWNUM &lt;= 10
+	</select>
+	
+	<!-- 팀원 조회 -->
+	<select id="findTeamMemberList" resultType="TeamMemberDTO">
+		SELECT
+			M.USER_NO memberNo,
+		    USER_NAME memberName
+		FROM
+		    TB_TEAM_MEMBER M
+		JOIN
+		    TB_USER U ON (M.USER_NO = U.USER_NO)
+		WHERE
+		    TEAM_ID = #{teamId}
+	</select>
+	
+	<!-- 내가 생성한 팀 조회 -->
+	<select id="findCreatedTeamSpaceByUserNo"
+			parameterType="long"
+			resultMap="selectTeamList">
+		SELECT 
+			TEAM_ID teamId, 
+			TEAM_LEADER_NO teamLeader,
+			USER_NAME leaderName,
+			TEAM_NAME title,
+			TEAM_CONTENT content,
+			TEAM_CATEGORY category,
+			T.CURRENT_DATE currentDate
+		FROM
+			TB_TEAM T
+		JOIN 
+			TB_USER ON (TEAM_LEADER_NO = USER_NO)
+		WHERE
+			TEAM_LEADER_NO = #{userNo}
+		ORDER BY
+			T.CURRENT_DATE DESC
+	</select>
+	
+	<!-- 내가 속한 팀 조회 -->
+	<select id="findTeamSpaceByUserNo"
+			parameterType="long"
+			resultMap="selectTeamList">
+		SELECT 
+			T.TEAM_ID teamId, 
+			TEAM_LEADER_NO teamLeader,
+			USER_NAME leaderName,
+			TEAM_NAME title,
+			TEAM_CONTENT content,
+			TEAM_CATEGORY category,
+			T.CURRENT_DATE currentDate
+		FROM
+			TB_TEAM T
+		JOIN 
+			TB_USER ON (TEAM_LEADER_NO = USER_NO)
+		JOIN
+			TB_TEAM_MEMBER M ON (T.TEAM_ID = M.TEAM_ID)
+		WHERE
+			M.USER_NO = #{userNo}
+		AND
+			NOT TEAM_LEADER_NO = #{userNo}
+		ORDER BY
+			T.CURRENT_DATE DESC
+	</select>
+	
+	<!-- 팀이 존재하는지 검증 (존재X : true | 존재O : false)-->
+	<select id="checkTeam"
+			parameterType="string"
+			resultType="boolean">
+		SELECT
+		    DECODE(COUNT(*), 0, 1, 0)
+		FROM
+		    TB_TEAM
+		WHERE
+		    TEAM_ID = #{teamId}
+	</select>
+	
+	
+	<!-- 팀의 정원이 초과하는지 검증 (초과 : true | 미만 : false)-->
+	<select id="checkFullMember"
+			parameterType="string"
+			resultType="boolean">
+		SELECT
+			CASE
+				WHEN
+					COUNT(*) &lt; 4 
+				THEN 
+					0
+				ELSE 
+					1
+			END
+		FROM
+			TB_TEAM
+		WHERE
+			TEAM_ID = #{teamId}
+	</select>
+	
+	
+	<!-- 이미 가입된 유저인지 검증 (가입됨 : true | 없음 : false)-->
+	<select id="checkAlreadyTeamMember"
+			parameterType="Team"
+			resultType="boolean">
+		SELECT
+	    	DECODE(COUNT(*), 0, 0, 1)
+		FROM
+		    TB_TEAM_MEMBER
+		WHERE
+		    TEAM_ID = #{teamId}
+		AND
+		    USER_NO = #{userNo}
+	</select>
+	
+	<!-- 팁가입 신청 기록이 있는지 검증 (존재O : true | 존재X : false) -->
+	<select id="checkAlreadyApplied"
+			parameterType="Team"
+			resultType="boolean">
+		SELECT
+			CASE 
+				WHEN 
+					COUNT(*) > 0 
+				THEN 
+					1 
+				ELSE 
+					0 
+				END
+		FROM
+		    TB_TEAM_APPLICANT
+		WHERE
+		    APPLICANT_NO = #{userNo}
+		AND 
+		    TEAM_ID = #{teamId}
+	</select>
+	
+	<insert id="requestTeamJoin"
+			parameterType="Team">
+		INSERT INTO
+			TB_TEAM_APPLICANT		
+		VALUES(
+			SEQ_REQUEST_NO.NEXTVAL,
+			#{teamId},
+			#{userNo},
+			SYSDATE
+		)
+	</insert>
+	
+</mapper>

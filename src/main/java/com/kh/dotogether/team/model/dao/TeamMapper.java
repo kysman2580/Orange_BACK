@@ -1,0 +1,35 @@
+package com.kh.dotogether.team.model.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import com.kh.dotogether.team.model.dto.TeamDTO;
+import com.kh.dotogether.team.model.vo.Team;
+
+@Mapper
+public interface TeamMapper {
+	
+	boolean countUserTeams(long userNo);
+	
+	int setTeam(Team team);
+	
+	int setTeamMember(Team team);
+	
+	List<TeamDTO> findTeamList(Team team);
+	
+	List<TeamDTO> findCreatedTeamSpaceByUserNo(Long userNo);
+	
+	List<TeamDTO> findTeamSpaceByUserNo(Long userNo);
+	
+	boolean checkTeam(String teamId);
+	
+	boolean checkFullMember(String teamId);
+	
+	boolean checkAlreadyTeamMember(Team team);
+	
+	boolean checkAlreadyApplied(Team team);
+	
+	int requestTeamJoin(Team team);
+}
