@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
-import com.kh.dotogether.exception.UserNotFoundException;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;

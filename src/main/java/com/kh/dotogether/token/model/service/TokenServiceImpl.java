@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.dotogether.auth.util.JWTUtil;
-import com.kh.dotogether.exception.InvalidTokenException;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;

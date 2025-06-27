@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.email.dao.EmailMapper">
+
+	<select id="findVerificationByEmail" resultType="EmailVerificationDTO">
+	  SELECT
+		  	  EMAIL_NO
+		  	, USER_NO
+		    , EMAIL
+		    , CODE
+		    , EXPIRE_AT
+	    FROM 
+	    	TB_EMAIL_VERIFICATION
+	   WHERE 
+	   		EMAIL = #{email}
+	</select>
+	
+	<select id="existsByUserIdAndEmail" resultType="boolean" parameterType="map">
+	  SELECT 
+	  		CASE 
+	           WHEN COUNT(*) > 0 THEN 1 
+	           ELSE 0 
+	         END
+	  FROM 
+	  		TB_USER
+	  WHERE 
+	  		USER_ID = #{userId}
+	    AND 
+	    	USER_EMAIL = #{userEmail}
+	    AND 
+	    	USER_STATUS = 'Y'
+	</select>
+	
+	<delete id="deleteVerificationByEmail" parameterType="string">
+	  DELETE 
+	  	FROM 
+	  		TB_EMAIL_VERIFICATION
+	   WHERE 
+	   		EMAIL = #{email}
+	</delete>
+	
+	<insert id="insertVerification">
+	  INSERT INTO TB_EMAIL_VERIFICATION (
+	    EMAIL_NO,
+	    USER_NO,
+	    EMAIL,
+	    CODE,
+	    EXPIRE_AT
+	  )
+	  VALUES (
+	    SEQ_EMAIL_NO.NEXTVAL,
+	    #{userNo},
+	    #{email},
+	    #{code},
+	    #{expireAt}
+	  )
+	</insert>
+
+
+
+</mapper>

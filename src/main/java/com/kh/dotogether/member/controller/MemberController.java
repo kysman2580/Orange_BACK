@@ -9,13 +9,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.dotogether.email.dto.EmailVerificationDTO;
+import com.kh.dotogether.email.service.EmailService;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.PasswordUpdateDTO;
 import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.member.model.service.MemberService;
 import com.kh.dotogether.util.ResponseData;
@@ -33,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
 	private final MemberService memberService;
+	private final EmailService emailService;
 	
 	/**
 	 * 회원가입 API
@@ -74,6 +79,7 @@ public class MemberController {
 	
 	/**
      * 아이디 중복 확인
+     * util > ResponseUtil
      */
     @GetMapping("/check-id/{userId}")
     public ResponseEntity<ResponseData> checkId(@PathVariable("userId") String userId) {
@@ -125,7 +131,7 @@ public class MemberController {
 	 * @param userId
 	 * @return
 	 */
-	@GetMapping("/find-pw/{userId}")
+	@GetMapping("/find-pw/step1/{userId}")
 	public ResponseEntity<ResponseData> findPasswordStep1(@PathVariable("userId") String userId){
 		log.info("비밀번호 찾기 1단계 - 아이디 확인 요청 : {}", userId);
 		memberService.findByUserId(userId);
@@ -137,22 +143,51 @@ public class MemberController {
                 .build());
 	}
 	
+	/**
+	 * 비밀번호 찾기(2단계 - 이메일 인증코드 요청보내기)
+	 * @param userId
+	 * @param userEmail
+	 * @return
+	 */
+	@GetMapping("/find-pw/step2/{userId}")
+	public ResponseEntity<ResponseData> findPasswordStep2(
+	        @PathVariable("userId") String userId,
+	        @RequestParam(name = "userEmail") @Email String userEmail) {
+		
+	    log.info("비밀번호 찾기 2단계 - 이메일 인증 요청: {}, {}", userId, userEmail);
+	    return emailService.processPasswordResetVerification(userId, userEmail);
+	}
 	
-//	@PostMapping("/send-code")
-//	public ResponseEntity<ResponseData<Object>> senderVerificationCode(@Valid @RequestBody EmailVerificationDTO dto){
-//		return null;
-//	}
+	/**
+	 * 비밀번호 찾기(2.5단계 - 이메일 인증코드 인증하기)
+	 * @param dto
+	 * @return
+	 */
+	@PostMapping("/verify-email")
+	public ResponseEntity<ResponseData> verifyEmailCode(@Valid @RequestBody EmailVerificationDTO dto) {
+		return emailService.verifyEmailCode(dto.getEmail(), dto.getCode());
+	}
+	
+	/**
+	 * 비밀번호 찾기(3단계 - 새 비밀번호 설정)
+	 * @param userId
+	 * @param dto
+	 * @return
+	 */
+	@PutMapping("/find-pw/step3/{userId}")
+	public ResponseEntity<ResponseData> resetPasswordStep3(
+			@PathVariable("userId") String userId, @RequestBody PasswordUpdateDTO dto) {
+	    
+		memberService.resetPassword(userId, dto.getUserEmail(), dto.getUserPw());
+	    return ResponseEntity.ok(
+    	    new ResponseData("", "비밀번호가 성공적으로 변경되었습니다.", Collections.emptyList())
+    	);
+	}
 	
 	
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
+
 }

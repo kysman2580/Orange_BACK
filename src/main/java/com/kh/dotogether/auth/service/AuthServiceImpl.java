@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.kh.dotogether.auth.model.dto.LoginDTO;
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
 import com.kh.dotogether.auth.util.JWTUtil;
-import com.kh.dotogether.exception.CustomAuthenticationException;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;

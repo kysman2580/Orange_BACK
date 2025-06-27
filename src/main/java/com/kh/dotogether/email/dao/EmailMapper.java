@@ -11,9 +11,11 @@ import com.kh.dotogether.email.dto.EmailVerificationDTO;
 public interface EmailMapper {
 	
 	void insertVerification(
-			@Param("email") String email,
-			@Param("code") String code, 
-			@Param("expireAt") LocalDateTime expireAt);
+	    @Param("userNo") Long userNo,
+	    @Param("email") String email,
+	    @Param("code") String code,
+	    @Param("expireAt") LocalDateTime expireAt
+	);
 	
 	EmailVerificationDTO findVerificationByEmail(@Param("email") String email);
 	

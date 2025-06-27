@@ -1,7 +1,10 @@
 package com.kh.dotogether.member.model.service;
 
+import org.springframework.http.ResponseEntity;
+
 import com.kh.dotogether.member.model.dto.MemberDTO;
 import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
+import com.kh.dotogether.util.ResponseData;
 
 public interface MemberService {
 
@@ -55,11 +58,11 @@ public interface MemberService {
 
     /**
      * 비밀번호 재설정
-     * @param userNo
+     * @param userId
      * @param email
      * @param newPassword
      */
-    void resetPassword(Long userNo, String email, String newPassword);
+    void resetPassword(String userId, String email, String newPassword);
     
     /**
      * 아이디 찾기(이름, 이메일)
@@ -68,4 +71,5 @@ public interface MemberService {
      * @return
      */
     UserIdResponseDTO findUserId(String userName, String userEmail);
+
 }

@@ -27,6 +27,9 @@ public class MemberServiceImpl implements MemberService {
 	private final EncryptionUtil encryptionUtil; // 양방향 암호화
 	private final JWTUtil jwtUtil;
 
+	/**
+	 * 회원가입
+	 */
 	@Override
 	public void signUp(MemberDTO memberDTO) {
 		// 중복 체크
@@ -57,23 +60,27 @@ public class MemberServiceImpl implements MemberService {
 		log.info("회원가입 완료: userId = {}", memberDTO.getUserId());
 	}
 
+	/**
+	 * 아이디, 이메일, 연락처 중복 체크
+	 */
 	@Override
 	public boolean isUserIdDuplicated(String userId) {
 		return memberMapper.existsByUserId(userId) > 0;
 	}
-
 	@Override
 	public boolean isEmailDuplicated(String email) {
 		String encEmail = encryptionUtil.encrypt(email);
 		return memberMapper.existsByEmail(encEmail) > 0;
 	}
-
 	@Override
 	public boolean isPhoneDuplicated(String phone) {
 		String encPhone = encryptionUtil.encrypt(phone);
 		return memberMapper.existsByPhone(encPhone) > 0;
 	}
 
+	/**
+	 * 회원 탈퇴(토큰 삭제)
+	 */
 	@Override
 	@Transactional
 	public boolean deleteUser(Long userNo, String authorizationHeader) {
@@ -95,53 +102,6 @@ public class MemberServiceImpl implements MemberService {
 		log.info("회원탈퇴 완료: userId = {}", userNo);
 		
 		return result > 0;
-	}
-
-	@Override
-	public MemberDTO findByUserNo(Long userNo) {
-		MemberDTO member = getValidMember(userNo);
-		
-		// 연락처, 이메일 복호화
-		member.setUserPhone(encryptionUtil.decrypt(member.getUserPhone()));
-		member.setUserEmail(encryptionUtil.decrypt(member.getUserEmail()));
-		
-		return member;
-	}
-
-	@Override
-	public void resetPassword(Long userNo, String email, String newPassword) {
-		MemberDTO member = getValidMember(userNo);
-		
-		// 이메일 비교는 복호화 후 비교
-		String dbEmail = encryptionUtil.decrypt(member.getUserEmail());
-		if(!dbEmail.equals(email)) {
-			throw new CustomException(ErrorCode.EMAIL_NOT_FOUND);
-		}
-		
-		// 비밀번호 암호화 후 변경
-		String encodeNewPassword = passwordService.encodePassword(newPassword);
-		int result = memberMapper.updatePassword(userNo, encodeNewPassword);
-		
-		if(result != 1) {
-			log.error("비밀번호 업데이트 실패: userId = {}, email = {}", userNo, email);
-			throw new CustomException(ErrorCode.USER_UPDATE_FAILED);
-		}
-		log.info("비밀번호 재설정 완료: userId = {}, email = {}", userNo, email);
-	}
-	
-	private MemberDTO getValidMember(Long userNo) {
-	    MemberDTO member = memberMapper.findByUserNo(userNo);
-	    if (member == null) {
-	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
-	    }
-	    return member;
-	}
-	
-	private String extractToken(String authorizationHeader) {
-		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			throw new CustomException(ErrorCode.INVALID_AUTH_INFO);
-		}
-		return authorizationHeader.substring(7); // "Bearer " 제거
 	}
 
 	
@@ -169,6 +129,7 @@ public class MemberServiceImpl implements MemberService {
 
 	/**
 	 * 비밀번호 찾기 1단계 - 아이디 조회
+	 * 2단계는 emailService
 	 */
 	@Override
 	public MemberDTO findByUserId(String userId) {
@@ -179,6 +140,75 @@ public class MemberServiceImpl implements MemberService {
 	    }
 		return memberMapper.findByUserId(userId);
 	}
+	
+	/**
+	 * 비밀번호 찾기 3단계 - 새 비밀번호 설정
+	 */
+	@Override
+	public void resetPassword(String userId, String email, String newPassword) {
+		MemberDTO member = findByUserId(userId);
+	    validateEmailMatches(member, email);
+	    updatePassword(member.getUserNo(), newPassword);
+	    
+		log.info("비밀번호 재설정 완료: userId = {}, email = {}", userId, email);
+	}
+	
+	
+	@Override
+	public MemberDTO findByUserNo(Long userNo) {
+		MemberDTO member = getValidMember(userNo);
+		
+		// 연락처, 이메일 복호화
+		member.setUserPhone(encryptionUtil.decrypt(member.getUserPhone()));
+		member.setUserEmail(encryptionUtil.decrypt(member.getUserEmail()));
+		
+		return member;
+	}
+
+	private MemberDTO getValidMember(Long userNo) {
+	    MemberDTO member = memberMapper.findByUserNo(userNo);
+	    if (member == null) {
+	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
+	    }
+	    return member;
+	}
+	
+	private String extractToken(String authorizationHeader) {
+		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+			throw new CustomException(ErrorCode.INVALID_AUTH_INFO);
+		}
+		return authorizationHeader.substring(7); // "Bearer " 제거
+	}
+	
+	
+	/**
+	 * 이메일 일치 검사 
+	 * @param member
+	 * @param plainEmail
+	 */
+	private void validateEmailMatches(MemberDTO member, String plainEmail) {
+	    String decryptedEmail = encryptionUtil.decrypt(member.getUserEmail());
+	    log.info("넘어온 이메일: {}", plainEmail);
+	    log.info("DB 복호화 이메일: {}", decryptedEmail);
+
+	    if (!plainEmail.equals(decryptedEmail)) {
+	        throw new CustomException(ErrorCode.EMAIL_NOT_FOUND);
+	    }
+	}
+	
+	/**
+	 * 비밀번호 일치 검사
+	 * @param userNo
+	 * @param rawPassword
+	 */
+	private void updatePassword(Long userNo, String rawPassword) {
+	    String encodedPassword = passwordService.encodePassword(rawPassword);
+	    int result = memberMapper.updatePassword(userNo, encodedPassword);
+	    if (result != 1) {
+	        throw new CustomException(ErrorCode.USER_UPDATE_FAILED);
+	    }
+	}
+
 
 
 }

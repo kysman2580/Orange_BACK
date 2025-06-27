@@ -12,9 +12,6 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public class EmailVerificationDTO {
 	@NotBlank(message = "이메일은 필수 입력입니다.")
 	@Email(message = "이메일 형식이 올바르지 않습니다.")
@@ -22,4 +19,6 @@ public class EmailVerificationDTO {
 	
 	@NotBlank(message = "인증 코드는 필수 입력입니다.")
 	private String code;
+	
+	private LocalDateTime expireAt; // 매퍼 조회용 필드
 }

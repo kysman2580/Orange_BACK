@@ -4,6 +4,7 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.dotogether.member.model.dao.MemberMapper">
 
+	<!--회원가입-->
 	<insert id="signUp" parameterType="MemberDTO">
 		INSERT INTO
 			TB_USER(
@@ -66,6 +67,7 @@
 		       USER_PHONE = #{userPhone}
 	</select>
 	
+	<!--유저 번호로 유저 정보 조회-->
 	<select id="findByUserNo" resultType="MemberDTO">
 		SELECT
 			     USER_NO
@@ -82,6 +84,7 @@
 		       USER_NO = #{userNo}
 	</select>
 	
+	<!--유저 아이디로 유저 정보 조회-->
 	<select id="findByUserId" resultType="MemberDTO">
 		SELECT
 			     USER_NO
@@ -131,6 +134,8 @@
 		   AND
 		   		USER_EMAIL = #{userEmail}
 	</select>
+	
+	<!--이름으로 아이디, 이메일 찾기-->
 	<select id="findByName" parameterType="string" resultType="MemberDTO">
 		SELECT
 				USER_ID, USER_EMAIL
@@ -139,5 +144,4 @@
 		 WHERE
 		 		USER_NAME = #{userName}
 	</select>
-
 </mapper>

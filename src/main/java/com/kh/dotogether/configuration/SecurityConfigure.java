@@ -77,6 +77,7 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/check-id/**").permitAll()
                 .requestMatchers("/api/members/check-email/**").permitAll()
                 .requestMatchers("/api/members/check-phone/**").permitAll()
+                .requestMatchers("/api/members/find-pw/**").permitAll()
 
                 // 로그인 필요
                 .requestMatchers(HttpMethod.DELETE, "/api/members/{id}").authenticated()
