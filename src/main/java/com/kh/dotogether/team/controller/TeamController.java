@@ -3,6 +3,7 @@ package com.kh.dotogether.team.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.dto.TeamMemberDTO;
@@ -72,6 +72,7 @@ public class TeamController {
 		return ResponseEntity.ok(responseData);
 	}
 	
+
 	@GetMapping("/affiliated")
 	public ResponseEntity<ResponseData> findTeamSpaceByUserNo(){
 		
@@ -113,6 +114,7 @@ public class TeamController {
 		return ResponseEntity.ok(responseData);
 	}
 	
+
 	@PostMapping("/join-accept")
 	public ResponseEntity<ResponseData> acceptTeamJoin(@RequestBody ApplicantDTO applicantInfo){
 		
@@ -208,6 +210,5 @@ public class TeamController {
 		
 		return ResponseEntity.ok(responseData);
 	}
-	
 	
 }

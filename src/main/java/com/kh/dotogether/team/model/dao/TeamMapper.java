@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.dto.TeamMemberDTO;
+
 import com.kh.dotogether.team.model.vo.Team;
 
 @Mapper
@@ -38,7 +39,7 @@ public interface TeamMapper {
 	int requestTeamJoin(Team team);
 	
 	List<ApplicantDTO> findTeamJoinRequests(Long userNo);
-	
+
 	Long findTeamLeaderNo(String teamId);
 	
 	int deleteTeamApplication(Long requestNo);
@@ -50,4 +51,5 @@ public interface TeamMapper {
 	int deleteTeamMember(Team team);
 	
 	List<TeamDTO> findTeamInfoByTeamId(String teamId);
+
 }

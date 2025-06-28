@@ -125,6 +125,7 @@
 		    TEAM_ID = #{teamId}
 	</select>
 	
+
 	<sql id="findTeamListInclude">
 		SELECT 
 			T.TEAM_ID teamId, 
@@ -166,6 +167,7 @@
 			T.CURRENT_DATE DESC
 	</select>
 	
+
 	<!-- 나의 모든 팀 조회 -->
 	<select id="findMyAllTeams"
 			parameterType="long"
@@ -178,7 +180,6 @@
 		ORDER BY
 			T.CURRENT_DATE DESC
 	</select>
-	
 	
 	
 	<!-- 팀이 존재하는지 검증 (존재X : true | 존재O : false)-->
@@ -283,6 +284,7 @@
 
 	</select>
 	
+
 	<select id="findTeamLeaderNo"
 			parameterType="string"
 			resultType="long">
@@ -350,6 +352,5 @@
 		WHERE
 			TEAM_ID = #{teamId}
 	</select>
-	
-	
+
 </mapper>
