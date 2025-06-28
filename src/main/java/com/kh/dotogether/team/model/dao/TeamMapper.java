@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.vo.Team;
 
@@ -32,4 +33,6 @@ public interface TeamMapper {
 	boolean checkAlreadyApplied(Team team);
 	
 	int requestTeamJoin(Team team);
+	
+	List<ApplicantDTO> findTeamJoinRequests(Long userNo);
 }

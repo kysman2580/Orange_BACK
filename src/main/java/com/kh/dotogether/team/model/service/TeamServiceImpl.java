@@ -10,6 +10,7 @@ import com.kh.dotogether.auth.service.AuthService;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.team.model.dao.TeamMapper;
+import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.vo.Team;
 
@@ -127,6 +128,17 @@ public class TeamServiceImpl implements TeamService {
 		}
 		
 		return;
+	}
+
+
+	@Override
+	public List<ApplicantDTO> findTeamJoinRequests() {
+		
+		Long userNo = authService.getUserDetails().getUserNo();
+		
+		List<ApplicantDTO> applicantList = teamMapper.findTeamJoinRequests(userNo);
+		
+		return applicantList;
 	}
 	
 	

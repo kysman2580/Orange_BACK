@@ -253,4 +253,26 @@
 		)
 	</insert>
 	
+	<select id="findTeamJoinRequests"
+			resultType="ApplicantDTO">
+		SELECT
+		    REQUEST_NO requestNo,
+		    A.TEAM_ID teamId,
+		    TEAM_NAME teamName,
+		    APPLICANT_NO applicantNo,
+		    USER_NAME applicantName,
+		    REQUEST_TIME requestTime
+		FROM
+		    TB_TEAM_APPLICANT A
+		JOIN
+		    TB_USER U ON(APPLICANT_NO = USER_NO)
+		JOIN
+		    TB_TEAM T ON(A.TEAM_ID = T.TEAM_ID)
+		WHERE
+		    T.TEAM_LEADER_NO = #{userNo} 
+		ORDER BY
+			REQUEST_TIME DESC
+
+	</select>
+	
 </mapper>

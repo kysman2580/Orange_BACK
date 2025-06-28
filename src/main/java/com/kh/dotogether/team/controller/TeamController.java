@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.dotogether.common.ResponseData;
+import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.service.TeamService;
 
@@ -93,6 +94,20 @@ public class TeamController {
 												.build();
 
 		
+		return ResponseEntity.ok(responseData);
+	}
+	
+	@GetMapping("/member")
+	public ResponseEntity<ResponseData> findTeamJoinRequests(){
+		
+		List<ApplicantDTO> applicantList = teamService.findTeamJoinRequests();
+		
+		ResponseData responseData = ResponseData.builder()
+												.code("S310")
+												.message("신청 정보가 조회되었습니다.")
+												.items(applicantList)
+												.build();
+
 		return ResponseEntity.ok(responseData);
 	}
 	
