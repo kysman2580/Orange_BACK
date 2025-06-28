@@ -9,7 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
-import com.kh.dotogether.exception.UserNotFoundException;
+import com.kh.dotogether.exception.exceptions.CustomException;
+import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
 
@@ -28,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 		MemberDTO user = memberMapper.findByUserId(userId);
 		
 		if(user == null || "N".equals(user.getUserStatus())) {
-			throw new UserNotFoundException("존재하지 않는 회원입니다.");
+			throw new CustomException(ErrorCode.NOT_FOUND_USER);
 		}
 		log.info("로그인 시도: userId = {}, userPw = {}", userId, user.getUserPw());
 		

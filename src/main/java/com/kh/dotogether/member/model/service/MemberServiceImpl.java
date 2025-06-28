@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.dotogether.auth.util.EncryptionUtil;
 import com.kh.dotogether.auth.util.JWTUtil;
-import com.kh.dotogether.exception.DuplicateUserException;
-import com.kh.dotogether.exception.UserNotFoundException;
-import com.kh.dotogether.exception.UserUpdateFailedException;
+import com.kh.dotogether.exception.exceptions.CustomException;
+import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.password.service.PasswordService;
 import com.kh.dotogether.token.model.service.TokenService;
 
@@ -27,17 +27,20 @@ public class MemberServiceImpl implements MemberService {
 	private final EncryptionUtil encryptionUtil; // 양방향 암호화
 	private final JWTUtil jwtUtil;
 
+	/**
+	 * 회원가입
+	 */
 	@Override
 	public void signUp(MemberDTO memberDTO) {
 		// 중복 체크
 		if(isUserIdDuplicated(memberDTO.getUserId())) {
-			throw new DuplicateUserException("이미 존재하는 아이디입니다.");
+			throw new CustomException(ErrorCode.DUPLICATE_USER_ID);
 		}
 		if(isEmailDuplicated(memberDTO.getUserEmail())) {
-			throw new DuplicateUserException("이미 존재하는 이메일입니다.");
+			throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
 		}
 		if(isPhoneDuplicated(memberDTO.getUserId())) {
-			throw new DuplicateUserException("이미 존재하는 연락처입니다.");
+			throw new CustomException(ErrorCode.DUPLICATE_PHONE);
 		}
 		
 		// 패스워드 암호화(일방향)
@@ -57,23 +60,27 @@ public class MemberServiceImpl implements MemberService {
 		log.info("회원가입 완료: userId = {}", memberDTO.getUserId());
 	}
 
+	/**
+	 * 아이디, 이메일, 연락처 중복 체크
+	 */
 	@Override
 	public boolean isUserIdDuplicated(String userId) {
 		return memberMapper.existsByUserId(userId) > 0;
 	}
-
 	@Override
 	public boolean isEmailDuplicated(String email) {
 		String encEmail = encryptionUtil.encrypt(email);
 		return memberMapper.existsByEmail(encEmail) > 0;
 	}
-
 	@Override
 	public boolean isPhoneDuplicated(String phone) {
 		String encPhone = encryptionUtil.encrypt(phone);
 		return memberMapper.existsByPhone(encPhone) > 0;
 	}
 
+	/**
+	 * 회원 탈퇴(토큰 삭제)
+	 */
 	@Override
 	@Transactional
 	public boolean deleteUser(Long userNo, String authorizationHeader) {
@@ -84,7 +91,7 @@ public class MemberServiceImpl implements MemberService {
 		MemberDTO member = getValidMember(userNo);
 		
 		if(!member.getUserId().equals(userIdFromToken)) {
-			throw new IllegalArgumentException("본인 계정만 탈퇴할 수 있습니다.");
+			throw new CustomException(ErrorCode.ONLY_SELF_DELETE);
 		}
 		
 		// userStatus = 'N'으로 변경
@@ -97,6 +104,56 @@ public class MemberServiceImpl implements MemberService {
 		return result > 0;
 	}
 
+	
+	/**
+	 * 아이디 찾기(이름, 이메일)
+	 */
+	@Override
+	public UserIdResponseDTO findUserId(String userName, String userEmail) {
+		MemberDTO member = memberMapper.findByName(userName);
+
+	    if (member == null) {
+	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
+	    }
+		
+	    // 복호화
+	    String decryptedEmail = encryptionUtil.decrypt(member.getUserEmail());
+
+	    if (!userEmail.equals(decryptedEmail)) {
+	        throw new CustomException(ErrorCode.EMAIL_NOT_MATCH);
+	    }
+
+	    log.info("아이디 찾기 성공 - userId: {}", member.getUserId());
+	    return new UserIdResponseDTO(member.getUserId());
+	}
+
+	/**
+	 * 비밀번호 찾기 1단계 - 아이디 조회
+	 * 2단계는 emailService
+	 */
+	@Override
+	public MemberDTO findByUserId(String userId) {
+		MemberDTO member = memberMapper.findByUserId(userId);
+
+	    if (member == null) {
+	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
+	    }
+		return memberMapper.findByUserId(userId);
+	}
+	
+	/**
+	 * 비밀번호 찾기 3단계 - 새 비밀번호 설정
+	 */
+	@Override
+	public void resetPassword(String userId, String email, String newPassword) {
+		MemberDTO member = findByUserId(userId);
+	    validateEmailMatches(member, email);
+	    updatePassword(member.getUserNo(), newPassword);
+	    
+		log.info("비밀번호 재설정 완료: userId = {}, email = {}", userId, email);
+	}
+	
+	
 	@Override
 	public MemberDTO findByUserNo(Long userNo) {
 		MemberDTO member = getValidMember(userNo);
@@ -108,40 +165,50 @@ public class MemberServiceImpl implements MemberService {
 		return member;
 	}
 
-	@Override
-	public void resetPassword(Long userNo, String email, String newPassword) {
-		MemberDTO member = getValidMember(userNo);
-		
-		// 이메일 비교는 복호화 후 비교
-		String dbEmail = encryptionUtil.decrypt(member.getUserEmail());
-		if(!dbEmail.equals(email)) {
-			throw new UserNotFoundException("일치하는 이메일이 없습니다.");
-		}
-		
-		// 비밀번호 암호화 후 변경
-		String encodeNewPassword = passwordService.encodePassword(newPassword);
-		int result = memberMapper.updatePassword(userNo, encodeNewPassword);
-		
-		if(result != 1) {
-			log.error("비밀번호 업데이트 실패: userId = {}, email = {}", userNo, email);
-			throw new UserUpdateFailedException("비밀번호 업데이트 실패");
-		}
-		log.info("비밀번호 재설정 완료: userId = {}, email = {}", userNo, email);
-	}
-	
 	private MemberDTO getValidMember(Long userNo) {
 	    MemberDTO member = memberMapper.findByUserNo(userNo);
 	    if (member == null) {
-	        throw new UserNotFoundException("존재하지 않는 사용자입니다.");
+	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
 	    }
 	    return member;
 	}
 	
 	private String extractToken(String authorizationHeader) {
 		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-			throw new IllegalArgumentException("유효한 인증 정보가 없습니다");
+			throw new CustomException(ErrorCode.INVALID_AUTH_INFO);
 		}
 		return authorizationHeader.substring(7); // "Bearer " 제거
 	}
+	
+	
+	/**
+	 * 이메일 일치 검사 
+	 * @param member
+	 * @param plainEmail
+	 */
+	private void validateEmailMatches(MemberDTO member, String plainEmail) {
+	    String decryptedEmail = encryptionUtil.decrypt(member.getUserEmail());
+	    log.info("넘어온 이메일: {}", plainEmail);
+	    log.info("DB 복호화 이메일: {}", decryptedEmail);
+
+	    if (!plainEmail.equals(decryptedEmail)) {
+	        throw new CustomException(ErrorCode.EMAIL_NOT_FOUND);
+	    }
+	}
+	
+	/**
+	 * 비밀번호 일치 검사
+	 * @param userNo
+	 * @param rawPassword
+	 */
+	private void updatePassword(Long userNo, String rawPassword) {
+	    String encodedPassword = passwordService.encodePassword(rawPassword);
+	    int result = memberMapper.updatePassword(userNo, encodedPassword);
+	    if (result != 1) {
+	        throw new CustomException(ErrorCode.USER_UPDATE_FAILED);
+	    }
+	}
+
+
 
 }

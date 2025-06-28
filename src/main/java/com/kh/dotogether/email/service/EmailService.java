@@ -1,5 +1,9 @@
 package com.kh.dotogether.email.service;
 
+import org.springframework.http.ResponseEntity;
+
+import com.kh.dotogether.util.ResponseData;
+
 public interface EmailService {
 	
 	/**
@@ -7,6 +11,13 @@ public interface EmailService {
 	 * @param email
 	 * @param verificationCode
 	 */
-	void sendVerificationEmail(String toEmail, String verificationCode);
+	void sendVerificationEmail(String email, String code);
+	
+	/**
+     * 비밀번호 재설정용 인증 전체 처리
+     */
+	ResponseEntity<ResponseData> processPasswordResetVerification(String userId, String userEmail);
+
+	ResponseEntity<ResponseData> verifyEmailCode(String email, String code);
 
 }

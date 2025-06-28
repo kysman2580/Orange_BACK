@@ -22,6 +22,10 @@ public class JWTUtil {
 	private String secretKey;
 	private SecretKey key;
 	
+	// 엑세스 토큰 시간
+	private static final long ACCESS_TOKEN_EXPIRATION = 1000L * 60 * 120; // 2시간
+	//private static final long ACCESS_TOKEN_EXPIRATION = 1000L * 60 * 30; // 30분 (나중에 이걸로 수정할 것)
+	
 	@PostConstruct
 	public void init() {
 		byte[] keyArr = Base64.getDecoder().decode(secretKey);
@@ -31,13 +35,14 @@ public class JWTUtil {
 	
 	/**
 	 * 액세스 토큰 생성 (30분 유효)
+	 * 테스트 - 2시간 유효
 	 */
 	public String getAccessToken(String userId, String role) {
 		return Jwts.builder()
 				   .setSubject(userId)
 				   .claim("role", role)
 				   .setIssuedAt(new Date())
-				   .setExpiration(new Date(System.currentTimeMillis() + 1800000L))
+				   .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
 				   .signWith(key)
 				   .compact();
 	}

@@ -1,6 +1,7 @@
 package com.kh.dotogether.member.model.service;
 
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 
 public interface MemberService {
 
@@ -44,12 +45,28 @@ public interface MemberService {
      * @return MemberDTO
      */
     MemberDTO findByUserNo(Long userNo);
+    
+    /**
+     * 비밀번호 찾기 1단계 - 아이디 조회
+     * @param userId
+     * @return
+     */
+    MemberDTO findByUserId(String userId);
 
     /**
      * 비밀번호 재설정
-     * @param userNo
+     * @param userId
      * @param email
      * @param newPassword
      */
-    void resetPassword(Long userNo, String email, String newPassword);
+    void resetPassword(String userId, String email, String newPassword);
+    
+    /**
+     * 아이디 찾기(이름, 이메일)
+     * @param userId
+     * @param userEmail
+     * @return
+     */
+    UserIdResponseDTO findUserId(String userName, String userEmail);
+
 }

@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kh.dotogether.auth.util.JWTUtil;
-import com.kh.dotogether.exception.InvalidTokenException;
+import com.kh.dotogether.exception.exceptions.CustomException;
+import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
 import com.kh.dotogether.token.model.dao.TokenMapper;
@@ -34,7 +35,7 @@ public class TokenServiceImpl implements TokenService {
         // 회원 상태 확인
         MemberDTO member = memberMapper.findByUserId(userId);
         if (member == null || "N".equals(member.getUserStatus())) {
-            throw new InvalidTokenException("탈퇴한 회원이거나 존재하지 않는 회원입니다.");
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
         }
 
         // 액세스/리프레시 토큰 생성
@@ -93,19 +94,19 @@ public class TokenServiceImpl implements TokenService {
             // 회원 상태 확인
             MemberDTO member = memberMapper.findByUserId(userId);
             if (member == null || "N".equals(member.getUserStatus())) {
-                throw new InvalidTokenException("탈퇴한 회원이거나 존재하지 않는 회원입니다.");
+            	throw new CustomException(ErrorCode.NOT_FOUND_USER);
             }
 
             // 리프레시 토큰 DB 조회
             RefreshToken tokenEntity = tokenMapper.findByToken(refreshToken);
             if (tokenEntity == null) {
-                throw new InvalidTokenException("존재하지 않는 리프레시 토큰입니다.");
+            	throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
             }
 
             // 만료 확인
             if (tokenEntity.getExpireAt().before(new Date())) {
                 tokenMapper.deleteTokenByUserNo(member.getUserNo());
-                throw new InvalidTokenException("만료된 리프레시 토큰입니다.");
+                throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
             }
 
             // 새 토큰 발급
@@ -113,9 +114,11 @@ public class TokenServiceImpl implements TokenService {
             return tokens;
 
         } catch (ExpiredJwtException e) {
-            throw new InvalidTokenException("만료된 리프레시 토큰입니다.");
+        	log.warn("리프레시 토큰 만료: {}", e.getMessage());
+        	throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (Exception e) {
-            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다.");
+        	log.warn("리프레시 토큰 처리 중 예외 발생: {}", e.getMessage());
+        	throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
     }
 

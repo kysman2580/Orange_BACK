@@ -1,5 +1,7 @@
 package com.kh.dotogether.auth.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.dotogether.auth.model.dto.LoginDTO;
 import com.kh.dotogether.auth.service.AuthService;
 import com.kh.dotogether.auth.util.JWTUtil;
-import com.kh.dotogether.common.ResponseData;
-import com.kh.dotogether.exception.InvalidTokenException;
+import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.member.model.service.MemberService;
 import com.kh.dotogether.token.model.service.TokenService;
+import com.kh.dotogether.util.ResponseData;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,14 +41,14 @@ public class AuthController {
 	 * @return
 	 */
 	@PostMapping("/tokens")
-	public ResponseEntity<ResponseData<Map<String, String>>> login(@RequestBody @Valid LoginDTO loginDTO) {
+	public ResponseEntity<ResponseData> login(@RequestBody @Valid LoginDTO loginDTO) {
 		log.info("로그인 요청: {}", loginDTO.getUserId());
 		Map<String, String> tokenMap = authService.login(loginDTO);
 		
-		return ResponseEntity.ok(ResponseData.<Map<String, String>>builder()
+		return ResponseEntity.ok(ResponseData.builder()
 				.code("200")
 				.message("로그인에 성공했습니다.")
-				.items(tokenMap)
+				.items(List.of(tokenMap))
 				.build()
 		);
 	}
@@ -57,15 +59,15 @@ public class AuthController {
 	 * @return
 	 */
 	@PostMapping("/refresh")
-	public ResponseEntity<ResponseData<Map<String, String>>> refresh(@RequestBody Map<String, String> tokenMap) {
+	public ResponseEntity<ResponseData> refresh(@RequestBody Map<String, String> tokenMap) {
 		String refreshToken = tokenMap.get("refreshToken");
 		
 		if (refreshToken == null || refreshToken.isEmpty()) {
 	        return ResponseEntity.badRequest().body(
-	            ResponseData.<Map<String, String>>builder()
+	            ResponseData.builder()
 	                .code("400")
 	                .message("리프레시 토큰이 없습니다.")
-	                .items(null)
+	                .items(Collections.emptyList())
 	                .build()
 	        );
 	    }
@@ -74,29 +76,29 @@ public class AuthController {
 	        Map<String, String> newTokens = tokenService.refreshToken(refreshToken);
 
 	        return ResponseEntity.ok(
-	            ResponseData.<Map<String, String>>builder()
+	            ResponseData.builder()
 	                .code("200")
 	                .message("토큰이 갱신되었습니다.")
-	                .items(newTokens)
+	                .items(List.of(newTokens))
 	                .build()
 	        );
 
-	    } catch (InvalidTokenException e) {
+	    } catch (CustomException e) {
 	        log.error("토큰 갱신 실패: {}", e.getMessage());
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-	                ResponseData.<Map<String, String>>builder()
+	                ResponseData.builder()
 	                        .code("401")
 	                        .message(e.getMessage())
-	                        .items(null)
+	                        .items(Collections.emptyList())
 	                        .build()
 	        );
 	    } catch (Exception e) {
 	    	log.error("토큰 갱신 실패: {}", e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-	                ResponseData.<Map<String, String>>builder()
+	                ResponseData.builder()
 	                        .code("500")
 	                        .message("서버 오류가 발생했습니다.")
-	                        .items(null)
+	                        .items(Collections.emptyList())
 	                        .build()
 	        );
 	    }
@@ -109,15 +111,14 @@ public class AuthController {
 	 * @return
 	 */
 	@PostMapping("/logout")
-	public ResponseEntity<ResponseData<Object>> logout(
-							@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+	public ResponseEntity<ResponseData> logout(@RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
 		authService.logout(authorizationHeader);
 		
 		return ResponseEntity.ok(
-		        ResponseData.<Object>builder()
+		        ResponseData.builder()
 		            .code("200")
 		            .message("로그아웃이 완료되었습니다.")
-		            .items(null)
+		            .items(Collections.emptyList())
 		            .build()
 	    );
 	}

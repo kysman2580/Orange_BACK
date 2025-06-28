@@ -4,6 +4,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
+import com.kh.dotogether.exception.exceptions.CustomException;
+import com.kh.dotogether.global.enums.ErrorCode;
 
 public class SecurityUtil {
 	// userNo 반환
@@ -11,7 +13,7 @@ public class SecurityUtil {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
 		if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-			throw new IllegalStateException("로그인한 사용자만 접근 가능합니다.");
+			throw new CustomException(ErrorCode.LOGIN_REQUIRED);
 		}
 		CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
 		System.out.println("현재 로그인한 사용자 번호 : " + user.getUserNo());
@@ -23,7 +25,7 @@ public class SecurityUtil {
 	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 	    if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-	        throw new IllegalStateException("로그인한 사용자만 접근 가능합니다.");
+	        throw new CustomException(ErrorCode.LOGIN_REQUIRED);
 	    }
 	    CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
 	    System.out.println("현재 로그인한 사용자 아이디 : " + user.getUserId());
