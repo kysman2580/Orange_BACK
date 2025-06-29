@@ -4,10 +4,8 @@ import java.util.List;
 
 import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
-<<<<<<< HEAD
 import com.kh.dotogether.team.model.dto.TeamMemberDTO;
-=======
->>>>>>> faaf4c8e3d5953cd1bc402e5e55a34f831d02436
+
 
 public interface TeamService {
 
@@ -22,7 +20,6 @@ public interface TeamService {
 	void requestTeamJoin(TeamDTO team);
 	
 	List<ApplicantDTO> findTeamJoinRequests();
-<<<<<<< HEAD
 	
 	void acceptTeamJoin(ApplicantDTO applicantInfo);
 	
@@ -37,7 +34,4 @@ public interface TeamService {
 	List<TeamDTO> findTeamInfoByTeamId(String teamId);
 	
 	void kickOutTeamMember(TeamMemberDTO temaMember);
-	
-=======
->>>>>>> faaf4c8e3d5953cd1bc402e5e55a34f831d02436
 }
