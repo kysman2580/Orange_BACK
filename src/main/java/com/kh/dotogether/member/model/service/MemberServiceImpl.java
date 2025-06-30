@@ -165,6 +165,11 @@ public class MemberServiceImpl implements MemberService {
 		return member;
 	}
 
+	/**
+	 * 사용자 확인
+	 * @param userNo
+	 * @return
+	 */
 	private MemberDTO getValidMember(Long userNo) {
 	    MemberDTO member = memberMapper.findByUserNo(userNo);
 	    if (member == null) {
@@ -173,6 +178,11 @@ public class MemberServiceImpl implements MemberService {
 	    return member;
 	}
 	
+	/**
+	 * 토큰 확인
+	 * @param authorizationHeader
+	 * @return
+	 */
 	private String extractToken(String authorizationHeader) {
 		if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
 			throw new CustomException(ErrorCode.INVALID_AUTH_INFO);
