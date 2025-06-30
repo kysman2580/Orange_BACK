@@ -55,6 +55,7 @@ public class ChatServiceImpl implements ChatService {
 		String messageId = UUID.randomUUID().toString(); 
 		String content = message.getContent();
 		MessageDTO responseMessage = new MessageDTO();
+		responseMessage.setSenderNo(message.getSenderNo());
 		
 		if(content == null || "".equals(content)){
 			responseMessage.setType("빈 문자 메시지는 전송이 불가능합니다.");
@@ -67,7 +68,7 @@ public class ChatServiceImpl implements ChatService {
 						.build();
 		
 		
-		if(teamMapper.checkTeam(team.getTeamId())) {
+		if(teamMapper.checkTeam(message.getTeamId())) {
 			responseMessage.setType("요청 보낸 팀이 존재하지 않습니다.");
 			return responseMessage;
 		}
@@ -101,15 +102,97 @@ public class ChatServiceImpl implements ChatService {
 
 	@Override
 	public MessageDTO updateChatMessage(MessageDTO message) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		System.out.println(">>>>>>>>>>" + message);
+
+		String content = message.getContent();
+		MessageDTO responseMessage = new MessageDTO();
+		responseMessage.setSenderNo(message.getSenderNo());
+		
+		if(content == null || "".equals(content)){
+			responseMessage.setType("빈 문자 메시지는 전송이 불가능합니다.");
+			return responseMessage;
+		}
+		
+		Team team = Team.builder()
+						.userNo(message.getSenderNo())
+						.teamId(message.getTeamId())
+						.build();
+		
+		if(teamMapper.checkTeam(message.getTeamId())) {
+			responseMessage.setType("요청 보낸 팀이 존재하지 않습니다.");
+			return responseMessage;
+		}
+		
+		if(teamMapper.findMemberByUserNo(team)) {
+			responseMessage.setType("요청 보낸 사용자는 팀원이 아닙니다.");
+			return responseMessage;
+		}
+		
+		if(chatMapper.checkIsSender(message)) {
+			responseMessage.setType("발신자가 아니면 수정이 불가 합니다.");
+			return responseMessage;
+		}
+		
+		if(chatMapper.checkMessage(message.getMessageId())) {
+			responseMessage.setType("요청 보낸 메시지가 존재하지 않습니다.");
+			return responseMessage;
+		}
+		
+		int updateChatMessage = chatMapper.updateChatMessage(message);
+		
+		if(updateChatMessage == 0) {
+			responseMessage.setType("메시지 수정에 실패했습니다.");
+			return responseMessage;
+		}
+		
+		responseMessage.setMessageId(message.getMessageId());
+		responseMessage.setContent(message.getContent());
+		responseMessage.setType("update");
+		
+		return responseMessage;
 	}
 
 
 	@Override
 	public MessageDTO deleteChatMessage(MessageDTO message) {
-		// TODO Auto-generated method stub
-		return null;
+		String content = message.getContent();
+		MessageDTO responseMessage = new MessageDTO();
+		responseMessage.setSenderNo(message.getSenderNo());
+		
+		
+		Team team = Team.builder()
+						.userNo(message.getSenderNo())
+						.teamId(message.getTeamId())
+						.build();
+		
+		if(teamMapper.checkTeam(message.getTeamId())) {
+			responseMessage.setType("요청 보낸 팀이 존재하지 않습니다.");
+			return responseMessage;
+		}
+		
+		if(teamMapper.findMemberByUserNo(team)) {
+			responseMessage.setType("요청 보낸 사용자는 팀원이 아닙니다.");
+			return responseMessage;
+		}
+		
+		if(chatMapper.checkIsSender(message)) {
+			responseMessage.setType("발신자가 아니면 삭제가 불가 합니다.");
+			return responseMessage;
+		}
+		
+		int deleteChatMessage = chatMapper.deleteChatMessage(message.getMessageId());
+		
+		if(deleteChatMessage == 0) {
+			responseMessage.setType("메시지 삭제에 실패했습니다.");
+			return responseMessage;
+		}
+		
+		
+		responseMessage.setMessageId(message.getMessageId());
+		responseMessage.setType("delete");
+		
+		return responseMessage;
 	}
 
 }

@@ -27,7 +27,6 @@ public class ChatController {
 	public ResponseEntity<ResponseData> findMessagesByRoomId(@RequestParam(name="teamId") String teamId,
 															 @RequestParam(name="lastTimeStamp") String lastTimeStamp){
 		
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>." + lastTimeStamp);
 		
 		List<MessageDTO> messages = chatService.findMessagesByRoomId(teamId, lastTimeStamp);
 		

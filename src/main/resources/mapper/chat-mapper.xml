@@ -66,5 +66,48 @@
 		WHERE
 			MESSAGE_ID = #{messageId}
 	</select>
+	
+	<select id="checkMessage"
+			parameterType="string"
+			resultType="boolean">
+		SELECT
+			DECODE(COUNT(*), 0, 1, 0)
+		FROM
+			TB_TEAM_MESSAGE
+		WHERE
+			MESSAGE_ID = #{messageId}
+	</select>
+	
+	<select id="checkIsSender"
+			parameterType="MessageDTO"
+			resultType="boolean">
+		SELECT
+			DECODE(COUNT(*), 0, 1, 0)
+		FROM 
+			TB_TEAM_MESSAGE
+		WHERE
+			MESSAGE_ID = #{messageId}
+		AND
+			SENDER_NO = #{senderNo}
+	</select>
+	
+	<update id="updateChatMessage"
+			parameterType="MessageDTO">
+		UPDATE
+			TB_TEAM_MESSAGE
+		SET
+			CONTENT = #{content}
+		WHERE
+			MESSAGE_ID = #{messageId}
+	</update>
+	
+	<delete id="deleteChatMessage"
+			parameterType="string">
+		DELETE
+		FROM
+			TB_TEAM_MESSAGE
+		WHERE
+			MESSAGE_ID = #{messageId}
+	</delete>
 
 </mapper>

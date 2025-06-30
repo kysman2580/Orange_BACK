@@ -17,4 +17,11 @@ public interface ChatMapper {
 	
 	MessageDTO findMessageByMessageId(String messageId);
 	
+	boolean checkMessage(String messageId);
+	
+	boolean checkIsSender(MessageDTO message);
+	
+	int updateChatMessage(MessageDTO message);
+	
+	int deleteChatMessage(String messageId);
 }

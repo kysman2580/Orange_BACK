@@ -59,12 +59,18 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 		case "send": 
 			chatMessage = chatService.sendChatMessage(chatMessage);
 			break;
+		case "update":
+			chatMessage = chatService.updateChatMessage(chatMessage);
+			break;
+		case "delete":
+			chatMessage = chatService.deleteChatMessage(chatMessage);
+			break;
 		default : break;
 		}
 		
 		TextMessage textMessage = 
 				new TextMessage(objectMapper.writeValueAsString(chatMessage));
-		
+				
 		for(WebSocketSession user: rooms.getOrDefault(roomId, Collections.emptySet())) {
 			if(user.isOpen()) {
 				user.sendMessage(textMessage);
