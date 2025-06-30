@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import com.kh.dotogether.websocket.configuration.handler.ChatWebSocketHandler;
 import com.kh.dotogether.websocket.configuration.handler.WorkWebSocketHandler;
+import com.kh.dotogether.websocket.configuration.handshake.WebSocketAuthInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,16 +19,17 @@ public class WebSocketConfig implements WebSocketConfigurer{
 	
 	private final ChatWebSocketHandler chatHandler;
 	private final WorkWebSocketHandler workHandler;
+	private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		
 		registry.addHandler(chatHandler, "/ws/chat/{roomId}")
-				.setAllowedOrigins("http://localhost:5173");
+				.addInterceptors(webSocketAuthInterceptor)
+				.setAllowedOrigins("*");
 		
 //		registry.addHandler(workHandler, "/ws/work/{roomId}")
 //				.setAllowedOrigins("http://localhost:5173");
-		
 		
 	}
 

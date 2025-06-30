@@ -14,6 +14,7 @@ import com.kh.dotogether.team.model.dto.ApplicantDTO;
 import com.kh.dotogether.team.model.dto.TeamDTO;
 import com.kh.dotogether.team.model.dto.TeamMemberDTO;
 import com.kh.dotogether.team.model.vo.Team;
+import com.kh.dotogether.team.util.TeamValidator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class TeamServiceImpl implements TeamService {
 	
 	private final AuthService authService;
 	private final TeamMapper teamMapper;
+	private final TeamValidator teamValidator;
 	
 	@Override
 	public void setTeam(TeamDTO team) {
@@ -147,7 +149,7 @@ public class TeamServiceImpl implements TeamService {
 		String teamId = applicantInfo.getTeamId();
 		Long userNo = authService.getUserDetails().getUserNo();
 		
-		isTeamLeader(teamId, userNo);
+		teamValidator.isTeamLeader(teamId, userNo);
 		
 		if(teamMapper.checkFullMember(teamId)) {
 			throw new CustomException(ErrorCode.TEAM_FULL);
@@ -204,7 +206,7 @@ public class TeamServiceImpl implements TeamService {
 		
 		Long userNo = authService.getUserDetails().getUserNo();
 		
-		isTeamLeader(teamId, userNo);
+		teamValidator.isTeamLeader(teamId, userNo);
 		
 		int deleteTeam = teamMapper.deleteTeamInfo(teamId);
 		
@@ -226,7 +228,7 @@ public class TeamServiceImpl implements TeamService {
 						  .userNo(userNo)
 						  .build();
 		
-		isTeamMember(teamVO);
+		teamValidator.isTeamMember(teamVO);
 		
 		Long teamLeader = teamMapper.findTeamLeaderNo(teamId);
 		
@@ -263,7 +265,7 @@ public class TeamServiceImpl implements TeamService {
 						  .teamId(teamId)
 						  .build();
 		
-		isTeamMember(teamVO);
+		teamValidator.isTeamMember(teamVO);
 
 		List<TeamDTO> TeamInfo = teamMapper.findTeamInfoByTeamId(teamId);
 		
@@ -275,7 +277,7 @@ public class TeamServiceImpl implements TeamService {
 		
 		Long userNo = authService.getUserDetails().getUserNo();
 		
-		isTeamLeader(temaMember.getTeamId(), userNo);
+		teamValidator.isTeamLeader(temaMember.getTeamId(), userNo);
 		
 		
 		if(userNo.equals(temaMember.getMemberNo())) {
@@ -295,29 +297,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 	
 	
-	private void isTeamLeader(String teamId, Long userNo) {
-		
-		if(teamMapper.checkTeam(teamId)) {
-			throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
-		}
-		
-		Long teamLeader = teamMapper.findTeamLeaderNo(teamId);
-		
-		if(!userNo.equals(teamLeader)) {
-			throw new CustomException(ErrorCode.TEAM_UNAUTHORIZED_USER);
-		}
-	}
 	
-	private void isTeamMember(Team teamVO) {
-		
-		if(teamMapper.checkTeam(teamVO.getTeamId())) {
-			throw new CustomException(ErrorCode.TEAM_NOT_FOUND);
-		}
-		
-		if(teamMapper.findMemberByUserNo(teamVO)) {
-			throw new CustomException(ErrorCode.TEAM_UNAUTHORIZED_USER);
-		}
-	}
 
 
 }

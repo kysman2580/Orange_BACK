@@ -4,6 +4,67 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.dotogether.chat.model.dao.ChatMapper">
 
+	<select id="findMessagesByRoomId"
+			parameterType="GetMessagesRequest"
+			resultType="MessageDTO">
+		SELECT
+			*
+		FROM(
+			SELECT
+				MESSAGE_ID messageId,
+				SENDER_NO senderNo,
+				USER_NAME senderName,
+				CONTENT content,
+				SENT_DATE sentDate
+			FROM
+				TB_TEAM_MESSAGE
+			JOIN
+				TB_USER ON (USER_NO = SENDER_NO)
+			WHERE
+				TEAM_ID = #{teamId}
+			<if test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
+				AND
+					SENT_DATE &lt; TO_TIMESTAMP(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS.FF3')
+			</if>
+			ORDER BY 
+				SENT_DATE DESC
+		)
+		WHERE
+			ROWNUM &lt;= 20
+		ORDER BY
+			sentDate ASC
+	</select>
 	
+	
+	<insert id="sendChatMessage"
+			parameterType="MessageDTO">
+		INSERT INTO
+			TB_TEAM_MESSAGE
+		VALUES(
+			    #{messageId},
+			    #{teamId},
+			    #{senderNo},
+			    #{content},
+			    SYSTIMESTAMP
+		)
+	</insert>
+	
+	
+	<select id="findMessageByMessageId"
+			resultType="MessageDTO"
+			parameterType="string">
+		SELECT
+			MESSAGE_ID messageId,
+			SENDER_NO senderNo,
+			USER_NAME senderName,
+			CONTENT content,
+			SENT_DATE sentDate
+		FROM
+			TB_TEAM_MESSAGE
+		JOIN
+			TB_USER ON(USER_NO = SENDER_NO)
+		WHERE
+			MESSAGE_ID = #{messageId}
+	</select>
 
 </mapper>

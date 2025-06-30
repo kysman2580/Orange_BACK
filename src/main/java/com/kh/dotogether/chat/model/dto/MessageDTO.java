@@ -18,7 +18,7 @@ public class MessageDTO {
 
 	private String content;
 
-	private LocalDateTime sentDate;
+	private String sentDate;
 
 	private String type;
 	
