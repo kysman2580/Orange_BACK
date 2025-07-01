@@ -23,6 +23,8 @@
 		    TEAM_ID = #{teamId}
 		AND
 			STATUS = #{status}
+		ORDER BY
+			CURRENT_DATE ASC
 	</select>
 	
 	
@@ -34,6 +36,7 @@
 		    WORK_ID,
 		    ASSIGNEE_NO,
 		    END_DATE,
+		    STATUS,
 		    CURRENT_DATE
 		)
 		VALUES(
@@ -41,6 +44,7 @@
 		    #{workId},
 		    #{assigneeNo},
 		    SYSDATE + 7,
+		    #{status},
 		    SYSDATE
 		)
 	</insert>
@@ -69,9 +73,10 @@
 		UPDATE
 		    TB_TEAM_WORK
 		SET
-		    STATUS = #{status}
+		    STATUS = #{status},
+		    CURRENT_DATE = SYSDATE
 		WHERE
-		    WORK_ID = #{workId)
+		    WORK_ID = #{workId}
 	</update>
 	
 	<update id="updateWorkDetail"
@@ -82,9 +87,9 @@
 		    TITLE = #{title},
 		    CONTENT = #{content},
 		    ASSIGNEE_NO = #{assigneeNo},
-		    END_DATE = #{endDate}
+		    END_DATE = TO_DATE(#{endDate}, 'YYYY-MM-DD')
 		WHERE
-		    WORK_ID = #{workId)
+		    WORK_ID = #{workId}
 	</update>
 	
 	<delete id="deleteWorkByWorkNo"
@@ -93,7 +98,7 @@
 		FROM
 		    TB_TEAM_WORK
 		WHERE
-			WORK_ID = #{workId)
+			WORK_ID = #{workId}
 	</delete>
 
 </mapper>

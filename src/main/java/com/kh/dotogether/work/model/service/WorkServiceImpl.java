@@ -50,14 +50,10 @@ public class WorkServiceImpl implements WorkService {
 	@Override
 	public WorkDTO addWork(WorkDTO request) {
 		
-		System.out.println(">>>>>>>>>>>>>>>>request>>>>>>>>>>>>>" + request);
-		
 		String workId = UUID.randomUUID().toString();
 		
 		WorkDTO responseWork = new WorkDTO();
 		responseWork.setRequestUserNo(request.getRequestUserNo());
-		
-		System.out.println(">>>>>>>>>>>>>>>>request>>>>>>>>>>>>>" + request);
 		
 		String isTeamMember = teamValidator.isTeamMember(request.getTeamId(), request.getRequestUserNo());
 		
@@ -66,14 +62,12 @@ public class WorkServiceImpl implements WorkService {
 			return responseWork;
 		}
 		
-		
 		Work work = Work.builder()
 						.teamId(request.getTeamId())
 						.workId(workId)
 						.assigneeNo(request.getRequestUserNo())
+						.status(request.getStatus())
 						.build();
-		
-		System.out.println(">>>>>>>>>>>>>>work>>>>>>>>>>>>>>>" + work);
 		
 		int addWork = workMapper.addWork(work);
 		
@@ -92,6 +86,7 @@ public class WorkServiceImpl implements WorkService {
 	@Override
 	public WorkDTO updateWorkStatus(WorkDTO request) {
 		
+		
 		WorkDTO responseWork = new WorkDTO();
 		responseWork.setRequestUserNo(request.getRequestUserNo());
 		
@@ -106,6 +101,7 @@ public class WorkServiceImpl implements WorkService {
 						.workId(request.getWorkId())
 						.status(request.getStatus())
 						.build();
+		
 		
 		int updateWorkStatus = workMapper.updateWorkStatus(work);
 		
@@ -125,6 +121,7 @@ public class WorkServiceImpl implements WorkService {
 
 	@Override
 	public WorkDTO updateWorkDetail(WorkDTO request) {
+		
 
 		WorkDTO responseWork = new WorkDTO();
 		responseWork.setRequestUserNo(request.getRequestUserNo());
@@ -143,6 +140,10 @@ public class WorkServiceImpl implements WorkService {
 		   ) {
 			responseWork.setType("빈 값이 있어 수정에 실패했습니다.");
 			return responseWork;
+		}
+		
+		if(isNullOrEmpty(request.getContent())) {
+			request.setContent("내용 없음");
 		}
 		
 		Work work = Work.builder()
@@ -186,6 +187,8 @@ public class WorkServiceImpl implements WorkService {
 			responseWork.setType("업무 삭제에 실패했습니다.");
 			return responseWork;
 		}
+		
+		responseWork.setStatus(request.getStatus());
 		
 		return request;
 	}
