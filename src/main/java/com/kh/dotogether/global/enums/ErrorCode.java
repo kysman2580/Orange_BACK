@@ -15,6 +15,7 @@ public enum ErrorCode {
 	NOT_FOUND_USER("E104", "존재하지 않는 사용자입니다."),
 	DECRYPTION_FAILED("E105", "복호화에 실패했습니다."),
 	
+	
 	// 로그인, 회원가입, 마이페이지 관련 ErrorCode
 	DUPLICATE_USER_ID("E200", "이미 존재하는 아이디입니다."),
 	DUPLICATE_EMAIL("E201", "이미 존재하는 이메일입니다."),
@@ -46,7 +47,8 @@ public enum ErrorCode {
 	SECTION_NOT_FOUND("E402", "섹션이 존재하지 않습니다."),
 	CANNOT_DELETE_LAST_SECTION("E403", "마지막 섹션은 삭제할 수 없습니다."),
 	DUE_DATE_PASSED("E404", "과거 날짜는 선택할 수 없습니다."),
-	SCHEDULE_NOT_FOUND("E405", "일정이 존재하지 않습니다.");
+	SCHEDULE_NOT_FOUND("E405", "일정이 존재하지 않습니다."),
+	EMPTY_TITLE("E406", "섹션 제목을 입력해주세요.");
 	
 	private final String code;
     private final String message;
