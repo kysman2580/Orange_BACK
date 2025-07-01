@@ -77,13 +77,24 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/check-id/**").permitAll()
                 .requestMatchers("/api/members/check-email/**").permitAll()
                 .requestMatchers("/api/members/check-phone/**").permitAll()
-                .requestMatchers("/api/members/find-pw/**").permitAll()
-                
+                .requestMatchers("/api/members/find-pw/**").permitAll()                
+                .requestMatchers("/ws/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/teams").permitAll()
+
+
                 // 로그인 필요
-                .requestMatchers(HttpMethod.DELETE, "/api/members/{id}").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/members/{id}",
+                									"/api/teams/join-cancle",
+                									"/api/teams",
+                									"/api/teams/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/teams",
+                								  "/api/teams/join",
+                								  "/api/teams/join-accept").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/teams/**",
+                								 "/api/chat").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
-
+                
                 // 정적 자원
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
@@ -101,7 +112,8 @@ public class SecurityConfigure {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
