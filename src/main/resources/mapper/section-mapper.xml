@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.section.model.dao.SectionMapper">
+
+	<!--섹션 제목 중복체크-->
+	<select id="existsByTitle" resultType="int">
+		SELECT
+			   COUNT(*)
+		  FROM
+		  	   TB_SECTION
+		 WHERE
+		       SECTION_TITLE = #{sectionTitle}
+	     AND
+	     	   USER_NO = #{userNo}
+	</select>
+	
+	<!--기준 섹션이 'Y' 컬럼이 존재하는지 조회-->
+	<select id="countBaseSection" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM
+			TB_SECTION
+		WHERE
+			IS_BASE_SECTION = 'Y'
+		AND
+			USER_NO = #{userNo}
+	</select>
+	
+	<!--섹션 추가-->
+	<insert id="insertSection">
+		INSERT INTO TB_SECTION (
+		    SECTION_NO,
+		    USER_NO,
+		    SECTION_TITLE,
+		    IS_BASE_SECTION
+		) VALUES (
+		    SEQ_SECTION_NO.NEXTVAL,
+		    #{userNo},
+		    #{sectionTitle},
+		    #{isBaseSection}
+		)
+	</insert>
+	
+	<update id="updateSectionTitle">
+		UPDATE
+			TB_SECTION
+	    SET
+	   	  	SECTION_TITLE = #{sectionTitle}
+		WHERE
+	  		USER_NO = #{userNo}
+  		AND
+  			SECTION_NO = #{sectionNo}
+	</update>
+	
+	<select id="findBySection">
+		SELECT 
+			COUNT(*)
+	    FROM 
+	    	TB_SECTION
+	    WHERE 
+	    	USER_NO = #{userNo}	  		
+	</select>
+	
+	<select id="findLastestSection">
+		SELECT *
+		FROM(
+			SELECT 
+	            SECTION_NO,
+	            USER_NO,
+	            SECTION_TITLE,
+	            IS_BASE_SECTION,
+	            CREATED_AT
+			FROM
+				TB_SECTION
+			WHERE 
+				SECTION_NO != #{sectionNo}
+			ORDER BY 
+				CREATED_AT ASC
+		)
+		WHERE ROWNUM = 1
+	</select>
+	
+	<update id="updateBaseSection">
+		UPDATE
+			TB_SECTION
+	    SET
+	   	  	IS_BASE_SECTION = #{isBaseSection}
+		WHERE
+	  		USER_NO = #{userNo}
+  		AND
+  			SECTION_NO = #{sectionNo}
+	</update>
+	
+	<delete id="deleteSection">
+		DELETE
+		  FROM
+		        TB_SECTION
+		 WHERE
+	        	SECTION_NO = #{sectionNo}        	
+	</delete>
+	
+
+</mapper>

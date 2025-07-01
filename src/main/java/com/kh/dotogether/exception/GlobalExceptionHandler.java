@@ -13,10 +13,10 @@ import com.kh.dotogether.util.ResponseError;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	
-	private ResponseEntity<ResponseError> exceptionHandler(String code, String Message){
+	private ResponseEntity<ResponseError> exceptionHandler(String code, String message){
 		
 		ResponseError responseError = ResponseError.builder().code(code)
-							   								 .message(Message)
+							   								 .message(message)
 							   								 .build();
 		
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
