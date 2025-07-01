@@ -29,4 +29,24 @@ public interface MemberInfoMapper {
 	 */
 	MemberAddressDTO findUserAddress(@Param("userNo") Long userNo);
 
+	/**
+	 * 개인정보수정
+	 * @param userNo
+	 * @param encPhone
+	 * @param encEmail
+	 * @param userAddress1
+	 * @param userAddress2
+	 * @return
+	 */
+	int updateUserInfo(
+		    @Param("userNo") Long userNo,
+		    @Param("userPhone") String encPhone,
+		    @Param("userEmail") String encEmail,
+		    @Param("userAddress1") String userAddress1,
+		    @Param("userAddress2") String userAddress2
+		);
+
+	int existsByPhone(@Param("userPhone") String encPhone, @Param("userNo") Long userNo);
+	int existsByEmail(@Param("userEmail") String encEmail, @Param("userNo") Long userNo);
+
 }

@@ -9,7 +9,7 @@ import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
-import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
+import com.kh.dotogether.member.model.dto.MemberIdResponseDTO;
 import com.kh.dotogether.password.service.PasswordService;
 import com.kh.dotogether.token.model.service.TokenService;
 
@@ -109,7 +109,7 @@ public class MemberServiceImpl implements MemberService {
 	 * 아이디 찾기(이름, 이메일)
 	 */
 	@Override
-	public UserIdResponseDTO findUserId(String userName, String userEmail) {
+	public MemberIdResponseDTO findUserId(String userName, String userEmail) {
 		MemberDTO member = memberMapper.findByName(userName);
 
 	    if (member == null) {
@@ -124,7 +124,7 @@ public class MemberServiceImpl implements MemberService {
 	    }
 
 	    log.info("아이디 찾기 성공 - userId: {}", member.getUserId());
-	    return new UserIdResponseDTO(member.getUserId());
+	    return new MemberIdResponseDTO(member.getUserId());
 	}
 
 	/**

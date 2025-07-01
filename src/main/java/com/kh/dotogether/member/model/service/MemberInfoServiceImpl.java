@@ -8,6 +8,7 @@ import com.kh.dotogether.member.model.dao.MemberInfoMapper;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberAddressDTO;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.MemberInfoUpdateDTO;
 import com.kh.dotogether.member.model.dto.MypagePasswordUpdateDTO;
 import com.kh.dotogether.password.service.PasswordService;
 
@@ -80,7 +81,11 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	@Override
 	public String findUserPhone(Long userNo) {
 		MemberDTO member = getValidMember(userNo);
-		return encryptionUtil.decrypt(member.getUserPhone());
+	    try {
+	        return encryptionUtil.decrypt(member.getUserPhone());
+	    } catch (Exception e) {
+	        throw new CustomException(ErrorCode.DECRYPTION_FAILED);
+	    }
 	}
 
 	/**
@@ -89,7 +94,11 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	@Override
 	public String findUserEmail(Long userNo) {
 		MemberDTO member = getValidMember(userNo);
-		return encryptionUtil.decrypt(member.getUserEmail());
+	    try {
+	        return encryptionUtil.decrypt(member.getUserEmail());
+	    } catch (Exception e) {
+	        throw new CustomException(ErrorCode.DECRYPTION_FAILED);
+	    }
 	}
 
 
@@ -99,7 +108,56 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	@Override
 	public MemberAddressDTO findUserAddress(Long userNo) {
 		getValidMember(userNo);
-		return memberInfoMapper.findUserAddress(userNo);
+		MemberAddressDTO addressDTO = memberInfoMapper.findUserAddress(userNo);
+		
+	    if (addressDTO == null || (addressDTO.getUserAddress1() == null && addressDTO.getUserAddress2() == null)) {
+	        throw new CustomException(ErrorCode.NOT_FOUND_USER);
+	    }
+	    return addressDTO;
 	}
+	
+
+	/**
+	 * 개인정보수정
+	 */
+	@Override
+	public void updateUserInfo(Long userNo, MemberInfoUpdateDTO dto) {
+		getValidMember(userNo);
+		
+	    // 이메일 중복 확인 (본인 제외)
+	    if (isEmailDuplicated(dto.getUserEmail(), userNo)) {
+	        throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+	    }
+
+	    // 연락처 중복 확인 (본인 제외)
+	    if (isPhoneDuplicated(dto.getUserPhone(), userNo)) {
+	        throw new CustomException(ErrorCode.DUPLICATE_PHONE);
+	    }
+		
+		// 암호화 후 저장
+		String encPhone = encryptionUtil.encrypt(dto.getUserPhone());
+		String encEmail = encryptionUtil.encrypt(dto.getUserEmail());
+		
+		int result = memberInfoMapper.updateUserInfo(
+				userNo, encPhone, encEmail, dto.getUserAddress1(), dto.getUserAddress2());
+		
+		if(result == 0) {
+			throw new CustomException(ErrorCode.USER_UPDATE_FAILED);
+		}
+	}
+	
+	
+	@Override
+	public boolean isEmailDuplicated(String email, Long userNo) {
+	    String encEmail = encryptionUtil.encrypt(email);
+	    return memberInfoMapper.existsByEmail(encEmail, userNo) > 0;
+	}
+
+	@Override
+	public boolean isPhoneDuplicated(String phone, Long userNo) {
+	    String encPhone = encryptionUtil.encrypt(phone);
+	    return memberInfoMapper.existsByPhone(encPhone, userNo) > 0;
+	}
+	
 
 }

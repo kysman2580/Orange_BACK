@@ -34,4 +34,39 @@
 		 WHERE
 		 		USER_NO = #{userNo}
 	</select>
+	
+	<!--개인정보수정-->
+	<update id="updateUserInfo">
+		UPDATE
+				TB_USER
+		   SET
+		   		  USER_PHONE = #{userPhone}
+		   		, USER_EMAIL = #{userEmail}
+		   		, USER_ADDRESS1 = #{userAddress1}
+		   		, USER_ADDRESS2 = #{userAddress2}
+		 WHERE
+		 		USER_NO = #{userNo}
+	</update>
+	
+	<select id="existsByPhone" resultType="int">
+	  SELECT 
+	  		COUNT(*) 
+	  	FROM 
+	  		TB_USER 
+	   WHERE 
+	   		USER_PHONE = #{userPhone}
+	  	 AND 
+	  	 	USER_NO != #{userNo}
+	</select>
+	
+	<select id="existsByEmail" resultType="int">
+	  SELECT 
+	  		COUNT(*) 
+	  	FROM 
+	  		TB_USER 
+	   WHERE 
+	   		USER_EMAIL = #{userEmail}
+	  	 AND 
+	  	 	USER_NO != #{userNo}
+	</select>
 </mapper>

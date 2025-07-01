@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.dotogether.member.model.dto.MemberAddressDTO;
+import com.kh.dotogether.member.model.dto.MemberInfoUpdateDTO;
 import com.kh.dotogether.member.model.dto.MypagePasswordUpdateDTO;
 import com.kh.dotogether.member.model.service.MemberInfoService;
 import com.kh.dotogether.util.ResponseData;
@@ -97,7 +98,6 @@ public class MemberInfoController {
 	@GetMapping("/email/{userNo}")
 	public ResponseEntity<ResponseData> findUserEmail(@PathVariable("userNo") Long userNo) {
 		String userEmail = memberInfoService.findUserEmail(userNo);
-		
 		return ResponseEntity.ok(
 				ResponseData.builder()
 				.code("200")
@@ -122,6 +122,25 @@ public class MemberInfoController {
 				.items(List.of(userAddress))
 				.build()
 		);
+	}
+
+	/**
+	 * 개인정보수정
+	 * @param userNo
+	 * @param dto
+	 * @return
+	 */
+	@PutMapping("/{userNo}")
+	public ResponseEntity<ResponseData> updateUserInfo(
+			@PathVariable("userNo") Long userNo, @RequestBody MemberInfoUpdateDTO dto) {
+		memberInfoService.updateUserInfo(userNo, dto);
+		return ResponseEntity.ok(
+		        ResponseData.builder()
+		            .code("200")
+		            .message("회원 정보 수정 완료")
+		            .items(Collections.emptyList())
+		            .build()
+	    );
 	}
 	
 }
