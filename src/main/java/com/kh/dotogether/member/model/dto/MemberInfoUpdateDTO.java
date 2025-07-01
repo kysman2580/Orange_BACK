@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberAddressDTO {
+public class MemberInfoUpdateDTO {
+	private String userPhone;
+	private String userEmail;
 	private String userAddress1;
 	private String userAddress2;
 }

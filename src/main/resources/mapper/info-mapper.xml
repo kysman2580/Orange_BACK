@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.member.model.dao.MemberInfoMapper">
+
+	<!--연락처 찾기-->
+	<select id="findUserPhone" parameterType="MemberDTO">
+		SELECT
+				USER_PHONE
+		  FROM
+		  		TB_USER
+		 WHERE
+		 		USER_NO = #{userNo}
+	</select>
+	
+	<!--이메일 찾기-->
+	<select id="findUserEmail" parameterType="MemberDTO">
+		SELECT
+				USER_EMAIL
+		  FROM
+		  		TB_USER
+		 WHERE
+		 		USER_NO = #{userNo}
+	</select>
+	
+	<!--주소 찾기-->
+	<select id="findUserAddress" parameterType="long" resultType="MemberAddressDTO">
+		SELECT
+				 USER_ADDRESS1 AS userAddress1
+				,USER_ADDRESS2 AS userAddress2
+		  FROM
+		  		TB_USER
+		 WHERE
+		 		USER_NO = #{userNo}
+	</select>
+	
+	<!--개인정보수정-->
+	<update id="updateUserInfo">
+		UPDATE
+				TB_USER
+		   SET
+		   		  USER_PHONE = #{userPhone}
+		   		, USER_EMAIL = #{userEmail}
+		   		, USER_ADDRESS1 = #{userAddress1}
+		   		, USER_ADDRESS2 = #{userAddress2}
+		 WHERE
+		 		USER_NO = #{userNo}
+	</update>
+	
+	<select id="existsByPhone" resultType="int">
+	  SELECT 
+	  		COUNT(*) 
+	  	FROM 
+	  		TB_USER 
+	   WHERE 
+	   		USER_PHONE = #{userPhone}
+	  	 AND 
+	  	 	USER_NO != #{userNo}
+	</select>
+	
+	<select id="existsByEmail" resultType="int">
+	  SELECT 
+	  		COUNT(*) 
+	  	FROM 
+	  		TB_USER 
+	   WHERE 
+	   		USER_EMAIL = #{userEmail}
+	  	 AND 
+	  	 	USER_NO != #{userNo}
+	</select>
+</mapper>
