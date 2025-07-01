@@ -77,7 +77,7 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/check-id/**").permitAll()
                 .requestMatchers("/api/members/check-email/**").permitAll()
                 .requestMatchers("/api/members/check-phone/**").permitAll()
-                .requestMatchers("/api/members/find-pw/**").permitAll()
+                .requestMatchers("/api/members/find-pw/**").permitAll()                
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/teams").permitAll()
 
