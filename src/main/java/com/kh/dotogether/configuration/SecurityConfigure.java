@@ -91,7 +91,8 @@ public class SecurityConfigure {
                 								  "/api/teams/join",
                 								  "/api/teams/join-accept").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/teams/**",
-                								 "/api/chat").authenticated()
+                								 "/api/chat",
+                								 "/api/works/**").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
                 

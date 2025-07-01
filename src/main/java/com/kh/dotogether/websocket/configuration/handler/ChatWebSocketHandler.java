@@ -82,8 +82,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 	
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		// TODO Auto-generated method stub
-		super.afterConnectionClosed(session, status);
+
 	}
 	
 	private String getRoomId(WebSocketSession session) {
