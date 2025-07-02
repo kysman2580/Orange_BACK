@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.dotogether.auth.model.dto.LoginDTO;
 import com.kh.dotogether.auth.service.AuthService;
-import com.kh.dotogether.auth.util.JWTUtil;
 import com.kh.dotogether.exception.exceptions.CustomException;
-import com.kh.dotogether.member.model.service.MemberService;
 import com.kh.dotogether.token.model.service.TokenService;
 import com.kh.dotogether.util.ResponseData;
 

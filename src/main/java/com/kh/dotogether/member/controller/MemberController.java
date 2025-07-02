@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kh.dotogether.email.dto.EmailVerificationDTO;
 import com.kh.dotogether.email.service.EmailService;
 import com.kh.dotogether.member.model.dto.MemberDTO;
+import com.kh.dotogether.member.model.dto.MemberIdResponseDTO;
 import com.kh.dotogether.member.model.dto.PasswordUpdateDTO;
-import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
 import com.kh.dotogether.member.model.service.MemberService;
 import com.kh.dotogether.util.ResponseData;
 import com.kh.dotogether.util.ResponseUtil;
@@ -117,7 +117,7 @@ public class MemberController {
 			@PathVariable("userName") String userName,
 			@RequestParam(name="userEmail") @Email(message="이메일 형식이 올바르지 않습니다.") String userEmail) {
 		
-		UserIdResponseDTO result = memberService.findUserId(userName, userEmail);
+		MemberIdResponseDTO result = memberService.findUserId(userName, userEmail);
 		
 		return ResponseEntity.ok(ResponseData.builder()
 				.code("200")

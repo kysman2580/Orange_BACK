@@ -38,4 +38,23 @@ public class TeamValidator {
 			throw new CustomException(ErrorCode.TEAM_UNAUTHORIZED_USER);
 		}
 	}
+	
+
+	public String isTeamMember(String teamId, Long userNo) {
+		
+		if(teamMapper.checkTeam(teamId)) {
+			return "요청 보낸 팀이 존재하지 않습니다.";
+		}
+		
+		Team team = Team.builder()
+				.userNo(userNo)
+				.teamId(teamId)
+				.build();
+		
+		if(teamMapper.findMemberByUserNo(team)) {
+			return "요청 보낸 사용자는 팀원이 아닙니다.";
+		}
+		
+		return null;
+	}
 }
