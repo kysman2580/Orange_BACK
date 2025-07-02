@@ -26,10 +26,11 @@ public class WebSocketConfig implements WebSocketConfigurer{
 		
 		registry.addHandler(chatHandler, "/ws/chat/{roomId}")
 				.addInterceptors(webSocketAuthInterceptor)
-				.setAllowedOrigins("*");
+				.setAllowedOrigins("http://localhost:5173");
 		
-//		registry.addHandler(workHandler, "/ws/work/{roomId}")
-//				.setAllowedOrigins("http://localhost:5173");
+		registry.addHandler(workHandler, "/ws/work/{roomId}")
+				.addInterceptors(webSocketAuthInterceptor)
+				.setAllowedOrigins("http://localhost:5173");
 		
 	}
 

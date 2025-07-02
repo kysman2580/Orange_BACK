@@ -57,7 +57,9 @@ public class ChatServiceImpl implements ChatService {
 		MessageDTO responseMessage = new MessageDTO();
 		responseMessage.setSenderNo(message.getSenderNo());
 		
-		if(content == null || "".equals(content)){
+		String checkContent = message.getContent().replaceAll("\\n", "").trim();
+		
+		if(checkContent == null || "".equals(checkContent)){
 			responseMessage.setType("빈 문자 메시지는 전송이 불가능합니다.");
 			return responseMessage;
 		}
@@ -102,14 +104,14 @@ public class ChatServiceImpl implements ChatService {
 
 	@Override
 	public MessageDTO updateChatMessage(MessageDTO message) {
-		
-		System.out.println(">>>>>>>>>>" + message);
-
+	
 		String content = message.getContent();
 		MessageDTO responseMessage = new MessageDTO();
 		responseMessage.setSenderNo(message.getSenderNo());
 		
-		if(content == null || "".equals(content)){
+		String checkContent = message.getContent().replaceAll("\\n", "").trim();
+		
+		if(checkContent == null || "".equals(checkContent)){
 			responseMessage.setType("빈 문자 메시지는 전송이 불가능합니다.");
 			return responseMessage;
 		}
