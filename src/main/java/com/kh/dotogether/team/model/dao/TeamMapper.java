@@ -42,7 +42,7 @@ public interface TeamMapper {
 
 	Long findTeamLeaderNo(String teamId);
 	
-	int deleteTeamApplication(Long requestNo);
+	int deleteTeamApplication(ApplicantDTO applicantInfo);
 	
 	int deleteTeamInfo(String teamId);
 	

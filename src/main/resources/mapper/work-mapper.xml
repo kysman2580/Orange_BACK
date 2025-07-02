@@ -14,11 +14,14 @@
 		    ASSIGNEE_NO assigneeNo,
 		    USER_NAME assigneeName,
 		    END_DATE endDate,
-		    STATUS status
+		    STATUS status,
+		    PROFILE_IMG assigneeProfile
 		FROM
 		    TB_TEAM_WORK
 		JOIN
-		    TB_USER ON (ASSIGNEE_NO = USER_NO)
+		    TB_USER U ON (ASSIGNEE_NO = USER_NO)
+		LEFT JOIN
+			TB_PROFILE P ON(U.USER_NO = P.USER_NO)
 		WHERE
 		    TEAM_ID = #{teamId}
 		AND
@@ -59,11 +62,14 @@
 		    ASSIGNEE_NO assigneeNo,
 		    USER_NAME assigneeName,
 		    END_DATE endDate,
-		    STATUS status
+		    STATUS status,
+		    PROFILE_IMG assigneeProfile
 		FROM
 		    TB_TEAM_WORK
 		JOIN
-		    TB_USER ON (ASSIGNEE_NO = USER_NO)
+		    TB_USER U ON (ASSIGNEE_NO = USER_NO)
+		LEFT JOIN
+			TB_PROFILE P ON(U.USER_NO = P.USER_NO)
 		WHERE
 			WORK_ID = #{workId}
 	</select>
