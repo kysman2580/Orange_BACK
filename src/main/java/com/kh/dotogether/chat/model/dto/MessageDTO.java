@@ -15,6 +15,8 @@ public class MessageDTO {
 	private Long senderNo;
 
 	private String senderName;
+	
+	private String senderProfile;
 
 	private String content;
 

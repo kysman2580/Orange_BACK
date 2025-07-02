@@ -14,6 +14,8 @@ public class ApplicantDTO {
 	private Long applicantNo;
 
 	private String applicantName;
+	
+	private String applicantProfile;
 
 	private String requestTime;
 	
