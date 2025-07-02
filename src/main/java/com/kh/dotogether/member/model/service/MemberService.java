@@ -1,7 +1,7 @@
 package com.kh.dotogether.member.model.service;
 
 import com.kh.dotogether.member.model.dto.MemberDTO;
-import com.kh.dotogether.member.model.dto.UserIdResponseDTO;
+import com.kh.dotogether.member.model.dto.MemberIdResponseDTO;
 
 public interface MemberService {
 
@@ -67,6 +67,6 @@ public interface MemberService {
      * @param userEmail
      * @return
      */
-    UserIdResponseDTO findUserId(String userName, String userEmail);
+    MemberIdResponseDTO findUserId(String userName, String userEmail);
 
 }
