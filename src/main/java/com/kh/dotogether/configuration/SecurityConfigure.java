@@ -86,12 +86,18 @@ public class SecurityConfigure {
                 .requestMatchers(HttpMethod.DELETE, "/api/members/{id}",
                 									"/api/teams/join-cancle",
                 									"/api/teams",
-                									"/api/teams/**").authenticated()
+                									"/api/teams/**",
+                									"/api/section",
+                									"/api/section/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/teams",
                 								  "/api/teams/join",
-                								  "/api/teams/join-accept").authenticated()
+                								  "/api/teams/join-accept",
+              									  "/api/section",
+              									  "/api/section/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/teams/**",
-                								 "/api/chat").authenticated()
+                								 "/api/chat",
+             									 "/api/section",
+             									 "/api/section/**").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
                 
