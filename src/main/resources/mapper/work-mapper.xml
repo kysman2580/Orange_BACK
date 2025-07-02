@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.work.model.dao.WorkMapper">
+
+	<select id="findWorkList"
+			parameterType="Work"
+			resultType="WorkDTO">
+		SELECT
+		    WORK_ID workId,
+		    TITLE title,
+		    CONTENT content,
+		    ASSIGNEE_NO assigneeNo,
+		    USER_NAME assigneeName,
+		    END_DATE endDate,
+		    STATUS status
+		FROM
+		    TB_TEAM_WORK
+		JOIN
+		    TB_USER ON (ASSIGNEE_NO = USER_NO)
+		WHERE
+		    TEAM_ID = #{teamId}
+		AND
+			STATUS = #{status}
+		ORDER BY
+			CURRENT_DATE ASC
+	</select>
+	
+	
+	<insert id="addWork"
+			parameterType="Work">
+		INSERT INTO
+		    TB_TEAM_WORK (
+		    TEAM_ID,
+		    WORK_ID,
+		    ASSIGNEE_NO,
+		    END_DATE,
+		    STATUS,
+		    CURRENT_DATE
+		)
+		VALUES(
+		    #{teamId},
+		    #{workId},
+		    #{assigneeNo},
+		    SYSDATE + 7,
+		    #{status},
+		    SYSDATE
+		)
+	</insert>
+	
+	<select id="findWorkByWorkId"
+			parameterType="string"
+			resultType="WorkDTO">
+		SELECT
+			WORK_ID workId,
+		    TITLE title,
+		    CONTENT content,
+		    ASSIGNEE_NO assigneeNo,
+		    USER_NAME assigneeName,
+		    END_DATE endDate,
+		    STATUS status
+		FROM
+		    TB_TEAM_WORK
+		JOIN
+		    TB_USER ON (ASSIGNEE_NO = USER_NO)
+		WHERE
+			WORK_ID = #{workId}
+	</select>
+	
+	<update id="updateWorkStatus"
+			parameterType="Work">
+		UPDATE
+		    TB_TEAM_WORK
+		SET
+		    STATUS = #{status},
+		    CURRENT_DATE = SYSDATE
+		WHERE
+		    WORK_ID = #{workId}
+	</update>
+	
+	<update id="updateWorkDetail"
+			parameterType="Work">
+		UPDATE
+		    TB_TEAM_WORK
+		SET
+		    TITLE = #{title},
+		    CONTENT = #{content},
+		    ASSIGNEE_NO = #{assigneeNo},
+		    END_DATE = TO_DATE(#{endDate}, 'YYYY-MM-DD')
+		WHERE
+		    WORK_ID = #{workId}
+	</update>
+	
+	<delete id="deleteWorkByWorkNo"
+			parameterType="string">
+		DELETE
+		FROM
+		    TB_TEAM_WORK
+		WHERE
+			WORK_ID = #{workId}
+	</delete>
+
+</mapper>
