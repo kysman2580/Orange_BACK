@@ -15,11 +15,14 @@
 				SENDER_NO senderNo,
 				USER_NAME senderName,
 				CONTENT content,
-				SENT_DATE sentDate
+				SENT_DATE sentDate,
+				PROFILE_IMG senderProfile
 			FROM
 				TB_TEAM_MESSAGE
 			JOIN
-				TB_USER ON (USER_NO = SENDER_NO)
+				TB_USER U ON (USER_NO = SENDER_NO)
+			LEFT JOIN
+				TB_PROFILE P ON(U.USER_NO = P.USER_NO)
 			WHERE
 				TEAM_ID = #{teamId}
 			<if test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
@@ -58,11 +61,14 @@
 			SENDER_NO senderNo,
 			USER_NAME senderName,
 			CONTENT content,
-			SENT_DATE sentDate
+			SENT_DATE sentDate,
+			PROFILE_IMG senderProfile
 		FROM
 			TB_TEAM_MESSAGE
 		JOIN
-			TB_USER ON(USER_NO = SENDER_NO)
+			TB_USER U ON(USER_NO = SENDER_NO)
+		LEFT JOIN
+			TB_PROFILE P ON(U.USER_NO = P.USER_NO)
 		WHERE
 			MESSAGE_ID = #{messageId}
 	</select>

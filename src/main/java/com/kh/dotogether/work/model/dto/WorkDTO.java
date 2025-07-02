@@ -18,6 +18,8 @@ public class WorkDTO {
 	private Long assigneeNo;
 
 	private String assigneeName;
+	
+	private String assigneeProfile;
 
 	private String endDate;
 

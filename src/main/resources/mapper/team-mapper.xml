@@ -76,6 +76,7 @@
 			    T.TEAM_CONTENT content,
 			    T.TEAM_CATEGORY category,
 			    T.CURRENT_DATE currentDate,
+			    PROFILE_IMG leaderProfile,
 			    (
 			        SELECT
 			            CASE WHEN COUNT(*) > 0 THEN 0 ELSE 1 END
@@ -90,6 +91,8 @@
 			    TB_TEAM T
 			JOIN 
 				TB_USER U ON (T.TEAM_LEADER_NO = U.USER_NO)
+			LEFT JOIN
+				TB_PROFILE P ON (T.TEAM_LEADER_NO = P.USER_NO)
 			<if test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
 				WHERE
 					T.CURRENT_DATE &lt; TO_DATE(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS')
@@ -116,11 +119,14 @@
 	<select id="findTeamMemberList" resultType="TeamMemberDTO">
 		SELECT
 			M.USER_NO memberNo,
-		    USER_NAME memberName
+		    USER_NAME memberName,
+		    PROFILE_IMG memberProfile
 		FROM
 		    TB_TEAM_MEMBER M
 		JOIN
 		    TB_USER U ON (M.USER_NO = U.USER_NO)
+		LEFT JOIN
+			TB_PROFILE P ON (U.USER_NO = P.USER_NO)
 		WHERE
 		    TEAM_ID = #{teamId}
 	</select>
@@ -134,11 +140,14 @@
 			TEAM_NAME title,
 			TEAM_CONTENT content,
 			TEAM_CATEGORY category,
-			T.CURRENT_DATE currentDate
+			T.CURRENT_DATE currentDate,
+			PROFILE_IMG leaderProfile
 		FROM
 			TB_TEAM T
 		JOIN 
-			TB_USER ON (TEAM_LEADER_NO = USER_NO)
+			TB_USER U ON (TEAM_LEADER_NO = U.USER_NO)
+		LEFT JOIN
+			TB_PROFILE P ON (TEAM_LEADER_NO = P.USER_NO)
 	</sql>
 	
 	<!-- 내가 생성한 팀 조회 -->
@@ -270,13 +279,16 @@
 		    TEAM_NAME teamName,
 		    APPLICANT_NO applicantNo,
 		    USER_NAME applicantName,
-		    REQUEST_TIME requestTime
+		    REQUEST_TIME requestTime,
+		    PROFILE_IMG applicantProfile
 		FROM
 		    TB_TEAM_APPLICANT A
 		JOIN
 		    TB_USER U ON(APPLICANT_NO = USER_NO)
 		JOIN
 		    TB_TEAM T ON(A.TEAM_ID = T.TEAM_ID)
+		LEFT JOIN
+			TB_PROFILE P ON(A.APPLICANT_NO = P.USER_NO)
 		WHERE
 		    T.TEAM_LEADER_NO = #{userNo} 
 		ORDER BY
@@ -297,12 +309,14 @@
 	</select>
 	
 	<delete id="deleteTeamApplication"
-			parameterType="long">
+			parameterType="ApplicantDTO">
 		DELETE
 		FROM
 			TB_TEAM_APPLICANT
 		WHERE
 			REQUEST_NO = #{requestNo}
+		AND 
+			TEAM_ID = #{teamId}
 	</delete>
 	
 	<delete id="deleteTeamInfo"
