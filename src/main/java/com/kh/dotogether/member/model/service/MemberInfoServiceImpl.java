@@ -51,10 +51,17 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 	
 	@Override
 	public void updateUserPassword(Long userNo, @Valid MypagePasswordUpdateDTO dto) {
-		getValidMember(userNo);
+		MemberDTO member = getValidMember(userNo);
+		
+		// 현재 비밀번호 일치 여부 확인
+	    if (!passwordService.matches(dto.getUserPassword(), member.getUserPw())) {
+	        throw new CustomException(ErrorCode.INVALID_LOGIN_INFO);
+	    }
+	    
+	    // 새 비밀번호 암호화 후 저장
 	    String encryptedPassword = passwordService.encodePassword(dto.getNewPassword());
-
 	    int result = memberMapper.updatePassword(userNo, encryptedPassword);
+	    
 	    if (result == 0) {
 	    	throw new CustomException(ErrorCode.USER_UPDATE_FAILED);
 	    }
