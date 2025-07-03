@@ -17,6 +17,8 @@ public class TeamDTO {
 	private Long teamLeader;
 	
 	private String leaderName;
+	
+	private String leaderProfile;
 
 	@Size(max=100, message="제목은 100자 이상 입력 불가능")
 	@NotBlank(message="빈 값 입력은 불가능") 

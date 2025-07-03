@@ -28,6 +28,7 @@ public class TeamServiceImpl implements TeamService {
 	private final AuthService authService;
 	private final TeamMapper teamMapper;
 	private final TeamValidator teamValidator;
+	private final DeleteTeamApplication deleteApplication;
 	
 	@Override
 	public void setTeam(TeamDTO team) {
@@ -152,10 +153,12 @@ public class TeamServiceImpl implements TeamService {
 		teamValidator.isTeamLeader(teamId, userNo);
 		
 		if(teamMapper.checkFullMember(teamId)) {
+			deleteApplication.deleteTeamApplication(applicantInfo);
 			throw new CustomException(ErrorCode.TEAM_FULL);
 		}
 		
-		if(teamMapper.countUserTeams(userNo)) {
+		if(teamMapper.countUserTeams(applicantInfo.getApplicantNo())) {
+			deleteApplication.deleteTeamApplication(applicantInfo);
 			throw new CustomException(ErrorCode.MAX_USER_TEAMS_EXCEEDED);
 		}
 		
@@ -169,7 +172,7 @@ public class TeamServiceImpl implements TeamService {
 			throw new CustomException(ErrorCode.INSERT_FAILED);
 		}
 		
-		int deleteApplicantion = teamMapper.deleteTeamApplication(applicantInfo.getRequestNo());
+		int deleteApplicantion = teamMapper.deleteTeamApplication(applicantInfo);
 		
 		if(deleteApplicantion != 1) {
 			throw new CustomException(ErrorCode.DELETE_FAILED);
@@ -191,7 +194,7 @@ public class TeamServiceImpl implements TeamService {
 			throw new CustomException(ErrorCode.TEAM_UNAUTHORIZED_USER);
 		}
 		
-		int deleteApplicantion = teamMapper.deleteTeamApplication(applicantInfo.getRequestNo());
+		int deleteApplicantion = teamMapper.deleteTeamApplication(applicantInfo);
 		
 		if(deleteApplicantion != 1) {
 			throw new CustomException(ErrorCode.DELETE_FAILED);
