@@ -77,6 +77,8 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/find-pw/**").permitAll()                
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/teams").permitAll()
+                // 관리자 권한
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
 
                 // 로그인 필요
@@ -86,9 +88,13 @@ public class SecurityConfigure {
                 									"/api/teams/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/teams",
                 								  "/api/teams/join",
-                								  "/api/teams/join-accept").authenticated()
+                								  "/api/teams/join-accept",
+                								  "/api/challenge",
+                								  "/api/challenge/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/teams/**",
                 								 "/api/chat",
+                								 "/api/challenge",
+                								 "/api/challenge/**",
                 								 "/api/works/**").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
