@@ -70,20 +70,6 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor{
 				return false;
 			}
 			
-//			if(SecurityContextHolder.getContext().getAuthentication() == null) {
-//				List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-//					new SimpleGrantedAuthority(userRole));
-//				
-//				UserDetails userDetails = userDetailsService.loadUserByUsername(member.getUserId());
-//				UsernamePasswordAuthenticationToken authentication = 
-//						new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-//				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//				SecurityContextHolder.getContext().setAuthentication(authentication);
-//				
-//				log.debug("인증 성공: userId={}, userNo={}, role={}", 
-//						member.getUserId(), member.getUserNo(), userRole);
-//			}
-			
 		} catch(ExpiredJwtException e) {
 			log.info("만료된 JWT 토큰 : {}", e.getMessage());
 			return false;
@@ -93,9 +79,7 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor{
 			return false;
 		} 
 		
-		
 		return true;
-
 	}
 
 	@Override

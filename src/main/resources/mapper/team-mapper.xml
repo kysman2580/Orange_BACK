@@ -259,6 +259,7 @@
 		    TEAM_ID = #{teamId}
 	</select>
 	
+	<!-- 팀 참가 신청 등록 -->
 	<insert id="requestTeamJoin"
 			parameterType="Team">
 		INSERT INTO
@@ -271,6 +272,7 @@
 		)
 	</insert>
 	
+	<!-- 현재 로그인한 팀장의 팀에 대한 참가 요청 목록 조회 -->
 	<select id="findTeamJoinRequests"
 			resultType="ApplicantDTO">
 		SELECT
@@ -293,10 +295,9 @@
 		    T.TEAM_LEADER_NO = #{userNo} 
 		ORDER BY
 			REQUEST_TIME DESC
-
 	</select>
 	
-
+	<!-- 팀 ID로 팀장 번호 조회 -->
 	<select id="findTeamLeaderNo"
 			parameterType="string"
 			resultType="long">
@@ -308,6 +309,7 @@
 			TEAM_ID = #{teamId}
 	</select>
 	
+	<!-- 팀 참가 신청 삭제 -->
 	<delete id="deleteTeamApplication"
 			parameterType="ApplicantDTO">
 		DELETE
@@ -319,7 +321,8 @@
 			TEAM_ID = #{teamId}
 	</delete>
 	
-	<delete id="deleteTeamInfo"
+	<!-- 팀 삭제 -->
+	<delete id="deleteTeam"
 			parameterType="string">
 		DELETE
 		FROM
@@ -328,6 +331,7 @@
 			TEAM_ID = #{teamId}
 	</delete>
 	
+	<!-- 특정 사용자(teamId 내) 팀원 여부 확인 (팀원일 경우 false, 아닐 경우 true 반환) -->
 	<select id="findMemberByUserNo"
 			parameterType="Team">
 		SELECT
@@ -340,6 +344,7 @@
 		    TEAM_ID = #{teamId}
 	</select>
 	
+	<!-- 팀에서 특정 회원 탈퇴 처리 -->
 	<delete id="deleteTeamMember"
 			parameterType="Team">
 		DELETE
@@ -351,7 +356,7 @@
 		    TEAM_ID = #{teamId}
 	</delete>
 	
-	
+	<!-- 팀 ID로 팀 정보 조회 -->
 	<select id="findTeamInfoByTeamId"
 			resultMap="selectTeamList"
 			parameterType="string">

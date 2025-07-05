@@ -143,9 +143,9 @@ public class TeamController {
 	
 	
 	@DeleteMapping()
-	public ResponseEntity<ResponseData> deleteTeamInfo(@RequestParam(name="teamId") String teamId){
+	public ResponseEntity<ResponseData> deleteTeam(@RequestParam(name="teamId") String teamId){
 		
-		teamService.deleteTeamInfo(teamId);
+		teamService.deleteTeam(teamId);
 		
 		ResponseData responseData = ResponseData.builder()
 												.code("S331")
