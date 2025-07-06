@@ -105,7 +105,8 @@ public class WorkServiceImpl implements WorkService {
 	@Override
 	public WorkDTO updateWorkStatus(WorkDTO request) {
 		
-		String isTeamMember = teamValidator.isTeamMember(request.getTeamId(), request.getRequestUserNo());
+		String isTeamMember = teamValidator.isTeamMember(
+				request.getTeamId(), request.getRequestUserNo());
 				
 		if(isTeamMember != null) {
 			return createResponse(request.getRequestUserNo(), isTeamMember);

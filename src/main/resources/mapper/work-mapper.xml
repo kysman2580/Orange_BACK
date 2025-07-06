@@ -15,7 +15,7 @@
 		    STATUS status,
 		    PROFILE_IMG assigneeProfile
 		FROM
-		    TB_TEAM_WORK
+		    TB_TEAM_WORK W
 		JOIN
 		    TB_USER U ON (ASSIGNEE_NO = USER_NO)
 		LEFT JOIN
@@ -32,7 +32,7 @@
 		AND
 			STATUS = #{status}
 		ORDER BY
-			CURRENT_DATE ASC
+			W.UPDATED_AT DESC
 	</select>
 	
 	
@@ -46,7 +46,7 @@
 		    ASSIGNEE_NO,
 		    END_DATE,
 		    STATUS,
-		    CURRENT_DATE
+		    UPDATED_AT
 		)
 		VALUES(
 		    #{teamId},
@@ -76,7 +76,7 @@
 		    TB_TEAM_WORK
 		SET
 		    STATUS = #{status},
-		    CURRENT_DATE = SYSDATE
+		    UPDATED_AT = SYSDATE
 		WHERE
 		    WORK_ID = #{workId}
 	</update>

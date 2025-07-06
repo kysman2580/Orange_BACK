@@ -88,7 +88,8 @@ public class ChatServiceImpl implements ChatService {
 		}
 		
 		
-		String validateTeamAndMember = teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
+		String validateTeamAndMember = 
+				teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
 		
 		if(validateTeamAndMember != null) {
 			return createResponse(message.getSenderNo(), validateTeamAndMember);
@@ -139,7 +140,8 @@ public class ChatServiceImpl implements ChatService {
 			return createResponse(message.getSenderNo(), "빈 문자 메시지는 전송이 불가능합니다.");
 		}
 		
-		String validateTeamAndMember = teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
+		String validateTeamAndMember = 
+				teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
 		
 		if(validateTeamAndMember != null) {
 			return createResponse(message.getSenderNo(), validateTeamAndMember);
@@ -184,7 +186,8 @@ public class ChatServiceImpl implements ChatService {
 		String content = message.getContent();
 		
 		
-		String validateTeamAndMember = teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
+		String validateTeamAndMember = 
+				teamValidator.isTeamMember(message.getTeamId(), message.getSenderNo());
 		
 		if(validateTeamAndMember != null) {
 			return createResponse(message.getSenderNo(), validateTeamAndMember);

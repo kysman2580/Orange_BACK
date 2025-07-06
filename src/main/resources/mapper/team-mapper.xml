@@ -59,7 +59,7 @@
     	<result property="title" column="title" />
     	<result property="content" column="content" />
 	    <result property="category" column="category" />
-	    <result property="currentDate" column="currentDate" />
+	    <result property="createdAt" column="createdAt" />
 	    <result property="canApplyToTeam" column="canApplyToTeam" />
 	    <collection property="teamMemberList" column="teamId" ofType="TeamMemberDTO"  select="findTeamMemberList" />
 	</resultMap>
@@ -75,7 +75,7 @@
 			    T.TEAM_NAME title,
 			    T.TEAM_CONTENT content,
 			    T.TEAM_CATEGORY category,
-			    T.CURRENT_DATE currentDate,
+			    T.CREATED_AT createdAt,
 			    PROFILE_IMG leaderProfile,
 			    (
 			        SELECT
@@ -95,7 +95,7 @@
 				TB_PROFILE P ON (T.TEAM_LEADER_NO = P.USER_NO)
 			<if test=" lastTimeStamp != null and lastTimeStamp != 'null' ">
 				WHERE
-					T.CURRENT_DATE &lt; TO_DATE(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS')
+					T.CREATED_AT &lt; TO_DATE(#{lastTimeStamp}, 'YYYY-MM-DD HH24:MI:SS')
 			</if>
 			<if test=" !('all'.equals(category)) " >
 				<choose>
@@ -109,7 +109,7 @@
 			        T.TEAM_CATEGORY = #{category}
 			</if>
 			ORDER BY
-			    T.CURRENT_DATE DESC
+			    T.CREATED_AT DESC
 		)
 		WHERE 
 			ROWNUM &lt;= 10
@@ -140,7 +140,7 @@
 			TEAM_NAME title,
 			TEAM_CONTENT content,
 			TEAM_CATEGORY category,
-			T.CURRENT_DATE currentDate,
+			T.CREATED_AT createdAt,
 			PROFILE_IMG leaderProfile
 		FROM
 			TB_TEAM T
@@ -158,7 +158,7 @@
 		WHERE
 			TEAM_LEADER_NO = #{userNo}
 		ORDER BY
-			T.CURRENT_DATE DESC
+			T.CREATED_AT DESC
 	</select>
 	
 	<!-- 내가 속한 팀 조회 -->
@@ -173,7 +173,7 @@
 		AND
 			NOT TEAM_LEADER_NO = #{userNo}
 		ORDER BY
-			T.CURRENT_DATE DESC
+			T.CREATED_AT DESC
 	</select>
 	
 
@@ -187,7 +187,7 @@
 		WHERE
 			M.USER_NO = #{userNo}
 		ORDER BY
-			T.CURRENT_DATE DESC
+			T.CREATED_AT DESC
 	</select>
 	
 	

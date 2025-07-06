@@ -44,7 +44,6 @@ public class WorkWebSocketHandler extends TextWebSocketHandler{
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		
-		
 		ObjectMapper objectMapper = new ObjectMapper();
 		WorkDTO work = objectMapper.readValue(message.getPayload(), WorkDTO.class);
 		
