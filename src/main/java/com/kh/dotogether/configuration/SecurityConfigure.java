@@ -85,16 +85,22 @@ public class SecurityConfigure {
                 									"/api/teams",
                 									"/api/teams/**",
                 									"/api/section",
-                									"/api/section/**").authenticated()
+                									"/api/section/**",
+                									"/api/schedule",
+                									"/api/schedule/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/teams",
                 								  "/api/teams/join",
                 								  "/api/teams/join-accept",
               									  "/api/section",
-              									  "/api/section/**").authenticated()
+              									  "/api/section/**",
+              									  "/api/schedule",
+            									  "/api/schedule/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/teams/**",
                 								 "/api/chat",
              									 "/api/section",
              									 "/api/section/**",
+             									 "/api/schedule",
+            									 "/api/schedule/**",
                 								 "/api/works/**").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()

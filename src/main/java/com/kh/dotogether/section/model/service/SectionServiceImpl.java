@@ -2,10 +2,8 @@ package com.kh.dotogether.section.model.service;
 
 import java.util.List;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.kh.dotogether.auth.model.vo.CustomUserDetails;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
 import com.kh.dotogether.schedule.model.dto.ScheduleDTO;
@@ -23,33 +21,35 @@ public class SectionServiceImpl implements SectionService {
 	private final SectionMapper sectionMapper;
 
 	@Override
-	public void setSection(SectionDTO sectionDTO) {
-		Long userNo = getCurrentUserNo();
+	public SectionDTO setSection(SectionDTO sectionDTO) {
+	    Long userNo = sectionDTO.getUserNo();
 
-		String title = sectionDTO.getSectionTitle();
-		if (title.isBlank()) throw new CustomException(ErrorCode.EMPTY_TITLE);
-		if (existsByTitle(title)) throw new CustomException(ErrorCode.DUPLICATE_SECTION_TITLE);
+	    String title = sectionDTO.getSectionTitle();
+	    if (title.isBlank()) throw new CustomException(ErrorCode.EMPTY_TITLE);
+	    if (existsByTitle(title, userNo)) throw new CustomException(ErrorCode.DUPLICATE_SECTION_TITLE);
 
-		sectionDTO.setUserNo(userNo);
-		sectionDTO.setIsBaseSection(existsBaseSection(userNo) ? "N" : "Y");
+	    sectionDTO.setUserNo(userNo);
+	    sectionDTO.setIsBaseSection(existsBaseSection(userNo) ? "N" : "Y");
 
-		sectionMapper.insertSection(sectionDTO);
+	    sectionMapper.insertSection(sectionDTO);
+	    
+	    // 생성된 섹션 정보를 바로 반환
+	    return sectionMapper.findSectionByNo(sectionDTO.getSectionNo(), userNo);
 	}
 
 	@Override
-	public boolean existsByTitle(String sectionTitle) {
-		Long userNo = getCurrentUserNo();
+	public boolean existsByTitle(String sectionTitle, Long userNo) {
 		return sectionMapper.existsByTitle(sectionTitle, userNo) > 0;
 	}
 
 	@Override
 	public void updateSectionTitle(SectionDTO sectionDTO) {
-		Long userNo = getCurrentUserNo();
+	    Long userNo = sectionDTO.getUserNo();
 		String title = sectionDTO.getSectionTitle();
 		Long sectionNo = sectionDTO.getSectionNo();
 
 		if (title.isBlank()) throw new CustomException(ErrorCode.EMPTY_TITLE);
-		if (existsByTitle(title)) throw new CustomException(ErrorCode.DUPLICATE_SECTION_TITLE);
+		if (existsByTitle(title, userNo)) throw new CustomException(ErrorCode.DUPLICATE_SECTION_TITLE);
 
 		sectionMapper.updateSectionTitle(title, userNo, sectionNo);
 	}
@@ -60,29 +60,25 @@ public class SectionServiceImpl implements SectionService {
 	}
 
 	@Override
-	public List<SectionDTO> findAllSectionsWithSchedules() {
-		Long userNo = getCurrentUserNo();
+	public List<SectionDTO> findAllSectionsWithSchedules(Long userNo) {
 		return sectionMapper.findAllSectionWithSchedule(userNo);
 	}
 
 	@Override
-	public SectionDTO findSectionWithSchedules(Long sectionNo) {
-		Long userNo = getCurrentUserNo();
+	public SectionDTO findSectionWithSchedules(Long sectionNo, Long userNo) {
 		SectionDTO section = sectionMapper.findSectionWithSchedules(sectionNo, userNo);
 		if (section == null) throw new CustomException(ErrorCode.SECTION_NOT_FOUND);
 		return section;
 	}
 
 	@Override
-	public void deleteSection(Long sectionNo) {
-	    Long userNo = getCurrentUserNo();
-	    
+	public void deleteSection(Long sectionNo, Long userNo) {
 	    // 핵심 디버깅 로그
 	    log.info("=== 섹션 삭제 디버깅 ===");
 	    log.info("getCurrentUserNo() 결과: {}", userNo);
 	    log.info("삭제할 섹션 번호: {}", sectionNo);
 	    
-	    SectionDTO sectionDTO = getSectionWithSchedules(sectionNo);
+	    SectionDTO sectionDTO = getSectionWithSchedules(sectionNo, userNo);
 	    int sectionCount = sectionMapper.findBySection(userNo);
 	    
 	    log.info("DB에서 조회한 섹션 개수 (USER_NO={}): {}", userNo, sectionCount);
@@ -107,8 +103,8 @@ public class SectionServiceImpl implements SectionService {
 	}
 
 
-	private SectionDTO getSectionWithSchedules(Long sectionNo) {
-		SectionDTO section = sectionMapper.findSectionByNo(sectionNo);
+	private SectionDTO getSectionWithSchedules(Long sectionNo, Long userNo) {
+		SectionDTO section = sectionMapper.findSectionByNo(sectionNo, userNo);
 		List<ScheduleDTO> schedules = sectionMapper.findSchedulesBySectionNo(sectionNo);
 		section.setSchedules(schedules);
 		return section;
@@ -136,12 +132,15 @@ public class SectionServiceImpl implements SectionService {
 		return sectionMapper.findLastestSection(sectionNo, userNo);
 	}
 
-	private Long getCurrentUserNo() {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (principal instanceof CustomUserDetails userDetails) {
-			return userDetails.getUserNo();
-		}
-		throw new CustomException(ErrorCode.NOT_FOUND_USER);
+
+	@Override
+	public SectionDTO findSectionByNo(Long sectionNo, Long userNo) {
+	    SectionDTO section = sectionMapper.findSectionByNo(sectionNo, userNo);
+	    if (section == null) {
+	        throw new CustomException(ErrorCode.SECTION_NOT_FOUND);
+	    }
+	    return section;
 	}
+
 }
 

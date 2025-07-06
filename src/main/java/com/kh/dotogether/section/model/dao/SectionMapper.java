@@ -34,13 +34,15 @@ public interface SectionMapper {
 								@Param("sectionNo") Long sectionNo, 
 								@Param("userNo") Long userNo);
 
-	SectionDTO findSectionByNo(Long sectionNo);
+	SectionDTO findSectionByNo(@Param("sectionNo") Long sectionNo, @Param("userNo") Long userNo);
 
 	List<ScheduleDTO> findSchedulesBySectionNo(Long sectionNo);
 
 	List<SectionDTO> findAllSectionWithSchedule(Long userNo);
 
 	SectionDTO findSectionWithSchedules(@Param("sectionNo") Long sectionNo, @Param("userNo") Long userNo);
+
+	Long selectBaseSectionNoByUserNo(Long userNo);
 
 
 	

@@ -4,19 +4,29 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.dotogether.schedule.model.dao.ScheduleMapper">
 
-	<insert id="insertSchedule">
-		  INSERT INTO TB_SCHEDULE (
-			    SCHEDULE_NO,
-			    USER_NO,       
-			    SECTION_NO,
-			    SCHEDULE_TITLE
-			) VALUES (
-			    SEQ_SCHEDULE_NO.NEXTVAL,
-			    #{userNo},     
-			    #{sectionNo},
-			    #{scheduleTitle}
-	)
+	<insert id="insertSchedule" parameterType="ScheduleDTO">
+	  <selectKey resultType="long" keyProperty="scheduleNo" order="AFTER">
+	    SELECT SEQ_SCHEDULE_NO.CURRVAL FROM DUAL
+	  </selectKey>
+	
+	  INSERT INTO TB_SCHEDULE (
+	        SCHEDULE_NO,
+	        USER_NO,
+	        SECTION_NO,
+	        SCHEDULE_TITLE,
+	        START_DATE,
+	        DUE_DATE
+	  ) VALUES (
+	        SEQ_SCHEDULE_NO.NEXTVAL,
+	        #{userNo},
+	        #{sectionNo},
+	        #{scheduleTitle},
+	        #{startDate},
+	        #{dueDate}
+	  )
 	</insert>
+
+
 	
 	<select id="findScheduleById">
 		SELECT
@@ -62,6 +72,19 @@
 		AND
 			USER_NO = #{userNo}	
 	</delete>
+	
+	
+	<update id="updateScheduleSection">
+	    UPDATE 
+	    	TB_SCHEDULE
+	    SET 
+	    	SECTION_NO = #{targetSectionNo}
+	    WHERE 
+	    	SCHEDULE_NO = #{scheduleNo}
+	    AND 
+	    	USER_NO = #{userNo}
+	</update>
+
 	
 
 	
