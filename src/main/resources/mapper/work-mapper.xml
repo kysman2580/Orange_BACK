@@ -4,9 +4,7 @@
     "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kh.dotogether.work.model.dao.WorkMapper">
 
-	<select id="findWorkList"
-			parameterType="Work"
-			resultType="WorkDTO">
+	<sql id="findWorkInfo">
 		SELECT
 		    WORK_ID workId,
 		    TITLE title,
@@ -17,20 +15,28 @@
 		    STATUS status,
 		    PROFILE_IMG assigneeProfile
 		FROM
-		    TB_TEAM_WORK
+		    TB_TEAM_WORK W
 		JOIN
 		    TB_USER U ON (ASSIGNEE_NO = USER_NO)
 		LEFT JOIN
 			TB_PROFILE P ON(U.USER_NO = P.USER_NO)
+	</sql>
+
+	<!-- 특정 팀의 상태별 업무 목록 조회 -->
+	<select id="findWorkList"
+			parameterType="Work"
+			resultType="WorkDTO">
+		<include refid="findWorkInfo"/>
 		WHERE
 		    TEAM_ID = #{teamId}
 		AND
 			STATUS = #{status}
 		ORDER BY
-			CURRENT_DATE ASC
+			W.UPDATED_AT DESC
 	</select>
 	
 	
+	<!-- 업무 추가 -->
 	<insert id="addWork"
 			parameterType="Work">
 		INSERT INTO
@@ -40,7 +46,7 @@
 		    ASSIGNEE_NO,
 		    END_DATE,
 		    STATUS,
-		    CURRENT_DATE
+		    UPDATED_AT
 		)
 		VALUES(
 		    #{teamId},
@@ -52,39 +58,31 @@
 		)
 	</insert>
 	
+	
+	<!-- 단일 업무 상세 조회 -->
 	<select id="findWorkByWorkId"
 			parameterType="string"
 			resultType="WorkDTO">
-		SELECT
-			WORK_ID workId,
-		    TITLE title,
-		    CONTENT content,
-		    ASSIGNEE_NO assigneeNo,
-		    USER_NAME assigneeName,
-		    END_DATE endDate,
-		    STATUS status,
-		    PROFILE_IMG assigneeProfile
-		FROM
-		    TB_TEAM_WORK
-		JOIN
-		    TB_USER U ON (ASSIGNEE_NO = USER_NO)
-		LEFT JOIN
-			TB_PROFILE P ON(U.USER_NO = P.USER_NO)
+		<include refid="findWorkInfo"/>
 		WHERE
 			WORK_ID = #{workId}
 	</select>
 	
+	
+	<!-- 업무 상태 수정 -->
 	<update id="updateWorkStatus"
 			parameterType="Work">
 		UPDATE
 		    TB_TEAM_WORK
 		SET
 		    STATUS = #{status},
-		    CURRENT_DATE = SYSDATE
+		    UPDATED_AT = SYSDATE
 		WHERE
 		    WORK_ID = #{workId}
 	</update>
 	
+	
+	<!-- 업무 상세 정보 수정 -->
 	<update id="updateWorkDetail"
 			parameterType="Work">
 		UPDATE
@@ -98,6 +96,8 @@
 		    WORK_ID = #{workId}
 	</update>
 	
+	
+	<!-- 업무 삭제 -->
 	<delete id="deleteWorkByWorkNo"
 			parameterType="string">
 		DELETE

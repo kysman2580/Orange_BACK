@@ -33,15 +33,20 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void insertComment(CommentDTO comment, MultipartFile file) {
-		challengeService.findById(comment.getRefBoardNo());
+//		challengeService.findById(comment.getRefBoardNo()); << sql 문제있음
 		String tokenUserNo =
 			String.valueOf(((CustomUserDetails)authService.getUserDetails()).getUserNo());
 		
-		if(!tokenUserNo.equals(comment.getCommentWriter())) {
+		if(tokenUserNo == null) {
 			throw new InvalidUserRequestException("이름을 알 수 없습니다");
 		}
 		
-		String filePath = s3Service.uploadFile(file);
+		String filePath = null;
+
+		if(file != null) {
+			filePath = s3Service.uploadFile(file);
+		}
+		
 		
 		Comment requestData =
 			Comment.builder()
@@ -50,21 +55,22 @@ public class CommentServiceImpl implements CommentService {
 					.refBoardNo(comment.getRefBoardNo())
 					.commentFileUrl(filePath)
 					.build();
+		
 		commentMapper.insertComment(requestData);
 	}
 
 	@Override
 	public List<CommentDTO> selectCommentList(Long boardNo) {
-		challengeService.findById(boardNo);
 		return commentMapper.selectCommentList(boardNo);
 	}
 
 	@Override
 	public CommentDTO update(CommentDTO comment, MultipartFile file) {
 		if(file != null && !file.isEmpty()) {
-			String filePath = fileService.store(file);
+			String filePath = s3Service.uploadFile(file);
 			comment.setCommentFileUrl(filePath);
 		}
+		
 		commentMapper.update(comment);
 		return comment;
 	}

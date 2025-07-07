@@ -12,7 +12,8 @@
 				COMMENT_CONTENT,
 				COMMENT_WRITER,
 				COMMENT_FILE_URL,
-				REF_BOARD_NO
+				REF_BOARD_NO,
+				COMMENT_DATE
 			)
 		VALUES
 			(
@@ -20,7 +21,8 @@
 				#{commentContent},
 				#{commentWriter},
 				#{commentFileUrl},
-				#{refBoardNo}
+				#{refBoardNo},
+				SYSDATE
 			)
 	</insert>
 	<select id="selectCommentList"
@@ -29,18 +31,17 @@
 		SELECT
 			COMMENT_NO commentNo,
 			REF_BOARD_NO refBoardNo,
-			USER_ID commentWriter,
+			USER_NAME commentWriter,
 			COMMENT_CONTENT commentContent,
-			CREATE_DATE createDate
+			COMMENT_DATE createDate,
+			COMMENT_FILE_URL commentFileUrl
 		FROM
 			TB_CHALLENGE_COMMENT
 		JOIN
 			TB_USER ON (COMMENT_WRITER = USER_NO)
-		AND
-			TB_CHALLENGE ON (REF_BOARD_NO = CHALLENGE_NO)
 		WHERE
 			REF_BOARD_NO = #{boardNo}
 		ORDER BY
-			CREATE_DATE DESC
+			COMMENT_DATE DESC
 	</select>
 </mapper>

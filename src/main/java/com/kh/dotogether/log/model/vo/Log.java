@@ -9,7 +9,8 @@ import lombok.Value;
 @Builder
 public class Log {
 	private Long logNo;
-	private Long logUserNo;
+	private String logUserId;
+	private String logUserName;
     private String logValue;
     private Date logDate;
 }

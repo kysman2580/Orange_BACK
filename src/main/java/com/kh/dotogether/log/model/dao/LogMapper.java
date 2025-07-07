@@ -1,4 +1,4 @@
-package com.kh.dotogether.log.model;
+package com.kh.dotogether.log.model.dao;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import com.kh.dotogether.log.model.dto.LogDTO;
 @Mapper
 public interface LogMapper {
 	
-	List<LogDTO> findAll(RowBounds rb);
-	
+	List<LogDTO> findAll(RowBounds rowBounds);
+	int countAll();
+	void insertLog(LogDTO log);
 }
