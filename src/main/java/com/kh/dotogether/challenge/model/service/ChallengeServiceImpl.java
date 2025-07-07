@@ -3,8 +3,6 @@ package com.kh.dotogether.challenge.model.service;
 import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +12,7 @@ import com.kh.dotogether.challenge.model.dao.ChallengeMapper;
 import com.kh.dotogether.challenge.model.dto.ChallengeDTO;
 import com.kh.dotogether.challenge.model.vo.Challenge;
 import com.kh.dotogether.file.service.FileService;
+import com.kh.dotogether.profile.model.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,7 @@ public class ChallengeServiceImpl implements ChallengeService {
 	private final ChallengeMapper challengeMapper;
 	private final AuthService authService;
 	private final FileService fileService;
+	private final S3Service s3Service;
 
 	@Override
 	public void save(ChallengeDTO challenge, MultipartFile file) {
@@ -37,8 +37,8 @@ public class ChallengeServiceImpl implements ChallengeService {
 		Challenge requestData = null;
 		
 		if(file != null && !file.isEmpty()) {
-			String filePath = fileService.store(file);
-			// challenge.setChallengeFileUrl(filePath);
+			String filePath = s3Service.uploadFile(file);
+			
 			requestData =
 				Challenge.builder()
 						.challengeTitle(challenge.getChallengeTitle())

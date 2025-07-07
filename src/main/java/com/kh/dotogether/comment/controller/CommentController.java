@@ -32,7 +32,7 @@ public class CommentController {
 	public ResponseEntity<?> insertComment(@Valid
 											@RequestBody CommentDTO comment,
 											@RequestParam(name="file", required = false) MultipartFile file){
-		commentService.insertComment(comment);
+		commentService.insertComment(comment, file);
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.update(comment, file));
 		
 	}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.log.model.dao.LogMapper">
+	<select id="findAll"
+			resultType="com.kh.dotogether.log.model.dto.LogDTO">
+		SELECT
+			LOG_NO logNo,
+			USER_NO userNo,
+			LOG_IP logIp,
+			LOG_VALUE logValue,
+			CURRENT_DATE currentDate
+		FROM
+			TB_LOG L
+		JOIN
+			TB_USER U ON (L.USER_NO = U.USER_NO)
+		ORDER
+		BY
+			LOG_NO DESC
+	</select>
+</mapper>

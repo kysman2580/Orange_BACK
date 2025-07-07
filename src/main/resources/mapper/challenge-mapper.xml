@@ -22,7 +22,8 @@
 				CHALLENGE_TITLE,
 				CHALLENGE_CONTENT,
 				CHALLENGE_AUTHOR,
-				CHALLENGE_FILE_URL
+				CHALLENGE_FILE_URL,
+				CHALLENGE_DATE
 			)
 		VALUES
 			(
@@ -30,7 +31,8 @@
 				#{challengeTitle},
 				#{challengeContent},
 				#{challengeAuthor},
-				#{challengeFileUrl}
+				#{challengeFileUrl},
+				SYSDATE
 			)
 			
 	</insert>

@@ -13,6 +13,7 @@ import com.kh.dotogether.comment.model.dto.CommentDTO;
 import com.kh.dotogether.comment.model.vo.Comment;
 import com.kh.dotogether.exception.exceptions.InvalidUserRequestException;
 import com.kh.dotogether.file.service.FileService;
+import com.kh.dotogether.profile.model.service.S3Service;
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
 
 
@@ -28,9 +29,10 @@ public class CommentServiceImpl implements CommentService {
 	private final ChallengeService challengeService;
 	private final AuthService authService;
 	private final FileService fileService;
+	private final S3Service s3Service;
 
 	@Override
-	public void insertComment(CommentDTO comment) {
+	public void insertComment(CommentDTO comment, MultipartFile file) {
 		challengeService.findById(comment.getRefBoardNo());
 		String tokenUserNo =
 			String.valueOf(((CustomUserDetails)authService.getUserDetails()).getUserNo());
@@ -38,11 +40,15 @@ public class CommentServiceImpl implements CommentService {
 		if(!tokenUserNo.equals(comment.getCommentWriter())) {
 			throw new InvalidUserRequestException("이름을 알 수 없습니다");
 		}
+		
+		String filePath = s3Service.uploadFile(file);
+		
 		Comment requestData =
 			Comment.builder()
 					.commentWriter(Long.parseLong(tokenUserNo))
 					.commentContent(comment.getCommentContent())
 					.refBoardNo(comment.getRefBoardNo())
+					.commentFileUrl(filePath)
 					.build();
 		commentMapper.insertComment(requestData);
 	}
