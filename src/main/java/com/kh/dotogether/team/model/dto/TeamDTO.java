@@ -30,7 +30,7 @@ public class TeamDTO {
 
 	private String category;
 	
-	private String currentDate;
+	private String createdAt;
 
 	private List<TeamMemberDTO> teamMemberList;
 

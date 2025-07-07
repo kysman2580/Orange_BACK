@@ -76,7 +76,6 @@ public class ChatWebSocketHandler extends TextWebSocketHandler{
 				user.sendMessage(textMessage);
 			}
 		}
-
 	}
 	
 	

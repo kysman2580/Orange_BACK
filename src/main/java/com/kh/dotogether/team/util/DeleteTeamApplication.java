@@ -1,4 +1,4 @@
-package com.kh.dotogether.team.model.service;
+package com.kh.dotogether.team.util;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

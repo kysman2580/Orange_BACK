@@ -25,7 +25,7 @@ public interface TeamService {
 	
 	void cancleTeamJoin(ApplicantDTO applicantInfo);
 	
-	void deleteTeamInfo(String teamId);
+	void deleteTeam(String teamId);
 	
 	void leaveTeam(String teamId);
 	
