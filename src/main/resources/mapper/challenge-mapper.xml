@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.dotogether.challenge.model.dao.ChallengeMapper">
+	<sql id="challengeColumn">
+		CHALLENGE_NO challengeNo,
+    	CHALLENGE_TITLE challengeTitle,
+    	CHALLENGE_CONTENT challengeContent,
+    	CHALLENGE_FILE_URL challengeFileUrl,
+    	USER_ID challengeAuthor,
+    	CHALLENGE_DATE challengeDate
+	</sql>
+	
+		<insert id="save"
+			parameterType="Challenge">
+		INSERT
+		INTO
+			TB_CHALLENGE
+			(
+				CHALLENGE_NO,
+				CHALLENGE_TITLE,
+				CHALLENGE_CONTENT,
+				CHALLENGE_AUTHOR,
+				CHALLENGE_FILE_URL,
+				CHALLENGE_DATE
+			)
+		VALUES
+			(
+				SEQ_CHALLENGE_NO.NEXTVAL,
+				#{challengeTitle},
+				#{challengeContent},
+				#{challengeAuthor},
+				#{challengeFileUrl},
+				SYSDATE
+			)
+			
+	</insert>
+	
+	<select id="findAll"
+			resultType="com.kh.dotogether.challenge.model.dto.ChallengeDTO">
+		SELECT
+		<include refid="challengeColumn" />
+		FROM
+			TB_CHALLENGE
+		JOIN
+			TB_USER ON (CHALLENGE_AUTHOR = USER_NO)
+		ORDER
+		BY
+			CHALLENGE_NO DESC
+	</select>
+	
+	<select id="findById"
+			parameterType="long"
+			resultType="com.kh.dotogether.challenge.model.dto.ChallengeDTO">
+		SELECT
+		<include refid="challengeColumn" />
+			CHALLENGE_CONTENT challengeContent,
+			CHALLENGE_FILE_URL challengeFileUrl
+		FROM
+			TB_CHALLENGE
+		JOIN
+			TB_USER ON (CHALLENGE_AUTHOR = USER_NO)
+		WHERE
+			CHALLENGE_NO = #{challengeNo}
+	</select>
+</mapper>

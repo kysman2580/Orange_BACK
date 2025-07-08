@@ -1,5 +1,8 @@
 package com.kh.dotogether.member.model.service;
 
+import java.util.List;
+
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,6 +10,7 @@ import com.kh.dotogether.auth.util.EncryptionUtil;
 import com.kh.dotogether.auth.util.JWTUtil;
 import com.kh.dotogether.exception.exceptions.CustomException;
 import com.kh.dotogether.global.enums.ErrorCode;
+import com.kh.dotogether.log.model.service.LogService;
 import com.kh.dotogether.member.model.dao.MemberMapper;
 import com.kh.dotogether.member.model.dto.MemberDTO;
 import com.kh.dotogether.member.model.dto.MemberIdResponseDTO;
@@ -26,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
 	private final TokenService tokenService;
 	private final EncryptionUtil encryptionUtil; // 양방향 암호화
 	private final JWTUtil jwtUtil;
+	private final LogService logService;
 
 	/**
 	 * 회원가입
@@ -58,6 +63,8 @@ public class MemberServiceImpl implements MemberService {
 		memberMapper.signUp(memberDTO);
 		
 		log.info("회원가입 완료: userId = {}", memberDTO.getUserId());
+		
+		logService.insertLog(memberDTO.getUserId(), memberDTO.getUserName(), "회원가입");
 	}
 
 	/**
@@ -100,6 +107,8 @@ public class MemberServiceImpl implements MemberService {
 		// 리프레시 토큰 삭제
 		tokenService.deleteUserToken(userNo);
 		log.info("회원탈퇴 완료: userId = {}", userNo);
+		
+		logService.insertLog(member.getUserId(), member.getUserName(), "회원탈퇴");
 		
 		return result > 0;
 	}
@@ -219,6 +228,30 @@ public class MemberServiceImpl implements MemberService {
 	    }
 	}
 
+	@Override
+    public List<MemberDTO> findAll(int page, int size) {
+        RowBounds rowBounds = new RowBounds((page - 1) * size, size);
+        List<MemberDTO> members = memberMapper.findAll(rowBounds);
+        // 이메일, 연락처 복호화
+        for (MemberDTO member : members) {
+            member.setUserEmail(encryptionUtil.decrypt(member.getUserEmail()));
+            member.setUserPhone(encryptionUtil.decrypt(member.getUserPhone()));
+        }
 
+        return members;
+    }
+
+    @Override
+    public int countAll() {
+        return memberMapper.countAll();
+    }
+
+	@Override
+	public boolean updateUserStatus(String userId, String newStatus) {
+		log.info("updateUserStatus 호출: userId={}, newStatus={}", userId, newStatus);
+	    int result = memberMapper.updateUserStatus(userId, newStatus);
+	    log.info("updateUserStatus 결과: result={}", result);
+	    return result == 1;
+	}
 
 }

@@ -77,6 +77,8 @@ public class SecurityConfigure {
                 .requestMatchers("/api/members/find-pw/**").permitAll()                
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/teams").permitAll()
+                // 관리자 권한
+                .requestMatchers("/api/admin/**").authenticated()
 
 
                 // 로그인 필요
@@ -91,17 +93,17 @@ public class SecurityConfigure {
                 .requestMatchers(HttpMethod.POST, "/api/teams",
                 								  "/api/teams/join",
                 								  "/api/teams/join-accept",
+                								  "/api/challenge",
+                								  "/api/challenge/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/teams/**",
+                								 "/api/chat",
+                								 "/api/challenge",
+                								 "/api/challenge/**",
               									  "/api/section",
               									  "/api/section/**",
               									  "/api/schedule",
-            									  "/api/schedule/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/teams/**",
-                								 "/api/chat",
-             									 "/api/section",
-             									 "/api/section/**",
-             									 "/api/schedule",
-            									 "/api/schedule/**",
-                								 "/api/works/**").authenticated()
+            									  "/api/schedule/**",
+            									  "/api/works/**").authenticated()
                 .requestMatchers("/api/info/**").authenticated()
                 .requestMatchers("/api/profile/**").authenticated()
                 
@@ -121,7 +123,7 @@ public class SecurityConfigure {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
