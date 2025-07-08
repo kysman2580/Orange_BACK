@@ -16,6 +16,6 @@ public interface ChallengeService {
 	
 	ChallengeDTO update(ChallengeDTO challenge, MultipartFile file);
 	
-	void deleteById(Long challengeNo);
+	void markAsCompleted(Long challengeNo);
 	
 }

@@ -89,12 +89,15 @@ public class SecurityConfigure {
                 									"/api/section",
                 									"/api/section/**",
                 									"/api/schedule",
-                									"/api/schedule/**").authenticated()
+                									"/api/schedule/**",
+                									"/api/challenge/comment/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/teams",
                 								  "/api/teams/join",
                 								  "/api/teams/join-accept",
                 								  "/api/challenge",
                 								  "/api/challenge/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/challenge/**",
+                								 "/api/challenge/comment/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/teams/**",
                 								 "/api/chat",
                 								 "/api/challenge",

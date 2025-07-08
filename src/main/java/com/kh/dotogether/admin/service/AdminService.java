@@ -10,5 +10,4 @@ public interface AdminService {
     List<MemberDTO> findAllUsers();
     List<ChallengeDTO> findAllChallenges();
     List<LogDTO> findAllLogs();
-    void deleteChallenge(Long id);
 }

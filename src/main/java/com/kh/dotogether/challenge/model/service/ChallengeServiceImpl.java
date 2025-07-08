@@ -94,8 +94,8 @@ public class ChallengeServiceImpl implements ChallengeService {
 	}
 
 	@Override
-	public void deleteById(Long challengeNo) {
-		challengeMapper.deleteById(challengeNo);
+	public void markAsCompleted(Long challengeNo) {
+	    challengeMapper.updateChallengeActive(challengeNo, "N"); // DB에 종료 상태 반영
 	}
 
 }

@@ -98,12 +98,5 @@ public class AdminController {
         List<LogDTO> logs = adminService.findAllLogs();
         return ResponseEntity.ok(logs);
     }
-
-    // 챌린지 삭제 (또는 종료 처리)
-    @DeleteMapping("/challenges/{id}")
-    public ResponseEntity<?> deleteChallenge(@PathVariable Long id) {
-        adminService.deleteChallenge(id);
-        return ResponseEntity.ok().body("챌린지가 성공적으로 종료되었습니다.");
-    }
     
 }

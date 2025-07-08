@@ -3,6 +3,7 @@ package com.kh.dotogether.challenge.model.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
@@ -21,7 +22,6 @@ public interface ChallengeMapper {
 	@Update("UPDATE TB_CHALLENGE SET CHALLENGE_TITLE = #{challengeTitle}, CHALLENGE_CONTENT = #{challengeContent}, CHALLENGE_FILE_URL = #{challengeFileUrl} WHERE CHALLENGE_NO = #{challengeNo}")
 	void update(ChallengeDTO challenge);
 	
-	@Update("UPDATE TB_CHALLENGE SET STATUS = 'N' WHERE CHALLENGE_NO = #{challengeNo}")
-	void deleteById(Long challengeNo);
+	int updateChallengeActive(@Param("challengeNo") Long challengeNo, @Param("status") String status);
 	
 }
