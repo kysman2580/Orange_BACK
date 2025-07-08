@@ -2,6 +2,7 @@ package com.kh.dotogether.configuration;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,33 +30,35 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-	
-	private final JwtFilter jwtFilter;
+   
+   private final JwtFilter jwtFilter;
+   @Value("${deploy.publicIp}")
+   private String publicIp;
 
-	/*	Argon2PasswordEncoder
-	 *	파라미터	설명	추천값
-		saltLength	솔트 길이 (byte)	보통 16
-		hashLength	해시 길이 (byte)	보통 32
-		parallelism	병렬 처리 수	1~4 (보통 CPU 코어 수)
-		memory	메모리 사용량 (KB 단위)	65536 이상 추천 (64MB)
-		iterations	반복 횟수	2 이상 추천
-	 */
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-	    return new Argon2PasswordEncoder(
-	            16, // saltLength
-	            32, // hashLength
-	            1,  // parallelism
-	            65536, // memoryInKb → 64MB
-	            3   // iterations
-	    );
-	}
-	
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
-	
+   /*   Argon2PasswordEncoder
+    *   파라미터   설명   추천값
+      saltLength   솔트 길이 (byte)   보통 16
+      hashLength   해시 길이 (byte)   보통 32
+      parallelism   병렬 처리 수   1~4 (보통 CPU 코어 수)
+      memory   메모리 사용량 (KB 단위)   65536 이상 추천 (64MB)
+      iterations   반복 횟수   2 이상 추천
+    */
+   @Bean
+   public PasswordEncoder passwordEncoder() {
+       return new Argon2PasswordEncoder(
+               16, // saltLength
+               32, // hashLength
+               1,  // parallelism
+               65536, // memoryInKb → 64MB
+               3   // iterations
+       );
+   }
+   
+   @Bean
+   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+      return config.getAuthenticationManager();
+   }
+   
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -81,7 +84,7 @@ public class SecurityConfigure {
                 .requestMatchers("/api/admin/**").authenticated()
 
 
-                // 로그인 필요
+             // 로그인 필요
                 .requestMatchers(HttpMethod.DELETE, "/api/members/{id}",
                 									"/api/teams/join-cancle",
                 									"/api/teams",
@@ -125,6 +128,7 @@ public class SecurityConfigure {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://" + publicIp));
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
@@ -134,5 +138,5 @@ public class SecurityConfigure {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-	
+   
 }
