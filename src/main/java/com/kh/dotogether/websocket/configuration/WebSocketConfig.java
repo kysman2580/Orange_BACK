@@ -16,21 +16,21 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSocket
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer{
-	
-	private final ChatWebSocketHandler chatHandler;
-	private final WorkWebSocketHandler workHandler;
-	private final WebSocketAuthInterceptor webSocketAuthInterceptor;
+   
+   private final ChatWebSocketHandler chatHandler;
+   private final WorkWebSocketHandler workHandler;
+   private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
-	@Override
-	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		
-		registry.addHandler(chatHandler, "/ws/chat/{roomId}")
-				.addInterceptors(webSocketAuthInterceptor)
-				.setAllowedOrigins("http://localhost:5173");
-		
-		registry.addHandler(workHandler, "/ws/work/{roomId}")
-				.addInterceptors(webSocketAuthInterceptor)
-				.setAllowedOrigins("http://localhost:5173");
-	}
+   @Override
+   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+      
+      registry.addHandler(chatHandler, "/ws/chat/{roomId}")
+            .addInterceptors(webSocketAuthInterceptor)
+            .setAllowedOrigins("http://54.180.120.189");
+      
+      registry.addHandler(workHandler, "/ws/work/{roomId}")
+            .addInterceptors(webSocketAuthInterceptor)
+            .setAllowedOrigins("http://54.180.120.189");
+   }
 
 }
