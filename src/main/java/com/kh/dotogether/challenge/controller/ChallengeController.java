@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,9 +70,10 @@ public class ChallengeController {
 							.body(challengeService.update(challenge, file));
 	}
 	
-	@DeleteMapping("/{no}")
-	public ResponseEntity<?> deleteById(@PathVariable(name="no") Long challengeNo){
-		challengeService.deleteById(challengeNo);
-		return ResponseEntity.ok().build();
+	@PostMapping("/{no}/complete")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Void> complete(@PathVariable(name="no") Long challengeNo) {
+	    challengeService.markAsCompleted(challengeNo); // 상태 변경
+	    return ResponseEntity.ok().build();
 	}
 }
