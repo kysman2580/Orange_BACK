@@ -30,10 +30,11 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfigure {
-   
-   private final JwtFilter jwtFilter;
-   @Value("${deploy.publicIp}")
-   private String publicIp;
+	
+	private final JwtFilter jwtFilter;
+	@Value("${deploy.publicIp}")
+	private String publicIp;
+
 
    /*   Argon2PasswordEncoder
     *   파라미터   설명   추천값
@@ -128,7 +129,7 @@ public class SecurityConfigure {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://" + publicIp));
+//        configuration.setAllowedOrigins(Arrays.asList(publicIp));
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         //configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
