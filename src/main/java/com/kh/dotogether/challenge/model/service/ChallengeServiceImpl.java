@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.kh.dotogether.auth.model.vo.CustomUserDetails;
@@ -96,6 +97,13 @@ public class ChallengeServiceImpl implements ChallengeService {
 	@Override
 	public void markAsCompleted(Long challengeNo) {
 	    challengeMapper.updateChallengeActive(challengeNo, "N"); // DB에 종료 상태 반영
+	}
+
+	@Override
+	@Transactional
+	public ChallengeDTO findAndIncrementViews(Long challengeNo) {
+		challengeMapper.incrementViewCount(challengeNo);
+        return challengeMapper.findById(challengeNo);
 	}
 
 }

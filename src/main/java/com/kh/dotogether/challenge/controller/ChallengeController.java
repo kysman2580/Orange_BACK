@@ -54,13 +54,6 @@ public class ChallengeController {
 		return ResponseEntity.ok(challengeService.findAll(page));
 	}
 	
-	@GetMapping("/{no}")
-	public ResponseEntity<ChallengeDTO> findById(@PathVariable(name="no")
-													@Min(value=1, message="작습니다")
-													Long challengeNo){
-		return ResponseEntity.ok(challengeService.findById(challengeNo));
-	}
-	
 	@PutMapping("/{no}")
 	public ResponseEntity<ChallengeDTO> update(@PathVariable(name="no") Long challengeNo,
 												ChallengeDTO challenge,
@@ -75,5 +68,11 @@ public class ChallengeController {
 	public ResponseEntity<Void> complete(@PathVariable(name="no") Long challengeNo) {
 	    challengeService.markAsCompleted(challengeNo); // 상태 변경
 	    return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/{no}")
+	public ResponseEntity<ChallengeDTO> getChallengeDetail(@PathVariable(name="no") @Min(value = 1, message = "작습니다") Long challengeNo) {
+	    ChallengeDTO challenge = challengeService.findAndIncrementViews(challengeNo);
+	    return ResponseEntity.ok(challenge);
 	}
 }

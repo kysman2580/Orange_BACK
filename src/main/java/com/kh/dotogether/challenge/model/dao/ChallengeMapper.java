@@ -17,6 +17,8 @@ public interface ChallengeMapper {
 	
 	List<ChallengeDTO> findAll(RowBounds rb);
 	
+	void incrementViewCount(Long challengeNo);
+	
 	ChallengeDTO findById(Long challengeNo);
 	
 	@Update("UPDATE TB_CHALLENGE SET CHALLENGE_TITLE = #{challengeTitle}, CHALLENGE_CONTENT = #{challengeContent}, CHALLENGE_FILE_URL = #{challengeFileUrl} WHERE CHALLENGE_NO = #{challengeNo}")

@@ -97,7 +97,7 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public void deleteComment(Long commentNo) {
+	public void softDeleteComment(Long commentNo) {
 	    Long loginUserNo = ((CustomUserDetails) authService.getUserDetails()).getUserNo();
 	    Long commentWriterNo = commentMapper.selectCommentWriterNo(commentNo);
 
@@ -105,7 +105,8 @@ public class CommentServiceImpl implements CommentService {
 	        throw new InvalidUserRequestException("댓글 삭제 권한이 없습니다.");
 	    }
 
-	    commentMapper.deleteComment(commentNo);
+	    commentMapper.softDeleteComment(commentNo);
 	}
+
 
 }

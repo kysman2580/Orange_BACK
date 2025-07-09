@@ -94,7 +94,7 @@ public class CommentController {
 
 	
 	@DeleteMapping("/{commentNo}")
-	public ResponseEntity<?> deleteComment(@PathVariable(name = "commentNo") Long commentNo) {
+	public ResponseEntity<?> softDeleteComment(@PathVariable(name = "commentNo") Long commentNo) {
 		CustomUserDetails userDetails = (CustomUserDetails) authService.getUserDetails();
 	    Long userNo = userDetails.getUserNo();
 
@@ -105,7 +105,7 @@ public class CommentController {
 	    }
 	    
 	    try {
-	        commentService.deleteComment(commentNo);
+	        commentService.softDeleteComment(commentNo);
 	        return ResponseEntity.ok().body("댓글이 삭제되었습니다.");
 	    } catch (Exception e) {
 	        log.error("댓글 삭제 중 오류", e);
