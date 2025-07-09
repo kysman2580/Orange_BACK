@@ -75,4 +75,37 @@ public class CommentServiceImpl implements CommentService {
 		return comment;
 	}
 
+	// 댓글 수정
+	@Override
+	public void updateComment(CommentDTO comment, MultipartFile file) {
+	    // 현재 로그인 사용자 번호
+	    Long loginUserNo = ((CustomUserDetails) authService.getUserDetails()).getUserNo();
+
+	    // DB에서 기존 댓글 작성자 조회 (CommentMapper에 메서드 필요)
+	    Long commentWriterNo = commentMapper.selectCommentWriterNo(comment.getCommentNo());
+	    
+	    if (!loginUserNo.equals(commentWriterNo)) {
+	        throw new InvalidUserRequestException("댓글 수정 권한이 없습니다.");
+	    }
+
+	    if (file != null && !file.isEmpty()) {
+	        String filePath = s3Service.uploadFile(file);
+	        comment.setCommentFileUrl(filePath);
+	    }
+	    
+	    commentMapper.updateComment(comment);
+	}
+
+	@Override
+	public void deleteComment(Long commentNo) {
+	    Long loginUserNo = ((CustomUserDetails) authService.getUserDetails()).getUserNo();
+	    Long commentWriterNo = commentMapper.selectCommentWriterNo(commentNo);
+
+	    if (!loginUserNo.equals(commentWriterNo)) {
+	        throw new InvalidUserRequestException("댓글 삭제 권한이 없습니다.");
+	    }
+
+	    commentMapper.deleteComment(commentNo);
+	}
+
 }

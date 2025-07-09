@@ -9,6 +9,7 @@
     	CHALLENGE_CONTENT challengeContent,
     	CHALLENGE_FILE_URL challengeFileUrl,
     	USER_ID challengeAuthor,
+    	CHALLENGE_ACTIVE status,
     	CHALLENGE_DATE challengeDate
 	</sql>
 	
@@ -64,4 +65,13 @@
 		WHERE
 			CHALLENGE_NO = #{challengeNo}
 	</select>
+	
+	<update id="updateChallengeActive">
+    	UPDATE
+    		TB_CHALLENGE
+    	SET
+    		CHALLENGE_ACTIVE = #{status}
+    	WHERE
+    		CHALLENGE_NO = #{challengeNo}
+	</update>
 </mapper>

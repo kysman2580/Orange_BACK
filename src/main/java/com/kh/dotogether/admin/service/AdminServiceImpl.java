@@ -38,9 +38,4 @@ public class AdminServiceImpl implements AdminService {
     	
         return null;
     }
-
-    @Override
-    public void deleteChallenge(Long id) {
-        challengeMapper.deleteById(id);
-    }
 }

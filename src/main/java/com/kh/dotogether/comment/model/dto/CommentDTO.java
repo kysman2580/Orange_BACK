@@ -1,6 +1,7 @@
 package com.kh.dotogether.comment.model.dto;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,9 @@ public class CommentDTO {
 	private Long commentNo;
 	@NotBlank(message="댓글을 작성해주세요")
 	private String commentContent;
+	private Long commentWriterNo;
 	private String commentWriter;
-	private Date createDate;
+	private LocalDateTime createDate;
 	private Long refBoardNo;
 	private String commentFileUrl;
 	

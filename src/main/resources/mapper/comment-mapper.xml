@@ -26,22 +26,52 @@
 			)
 	</insert>
 	<select id="selectCommentList"
-			parameterType="long"
-			resultType="com.kh.dotogether.comment.model.dto.CommentDTO">
-		SELECT
-			COMMENT_NO commentNo,
-			REF_BOARD_NO refBoardNo,
-			USER_NAME commentWriter,
-			COMMENT_CONTENT commentContent,
-			COMMENT_DATE createDate,
-			COMMENT_FILE_URL commentFileUrl
-		FROM
-			TB_CHALLENGE_COMMENT
-		JOIN
-			TB_USER ON (COMMENT_WRITER = USER_NO)
-		WHERE
-			REF_BOARD_NO = #{boardNo}
-		ORDER BY
-			COMMENT_DATE DESC
+        parameterType="long"
+        resultType="com.kh.dotogether.comment.model.dto.CommentDTO">
+	    SELECT
+	        cc.COMMENT_NO AS commentNo,
+	        cc.REF_BOARD_NO AS refBoardNo,
+	        u.USER_NAME AS commentWriter,
+	        cc.COMMENT_CONTENT AS commentContent,
+	        cc.COMMENT_DATE AS createDate,
+	        cc.COMMENT_FILE_URL AS commentFileUrl,
+	        cc.COMMENT_WRITER AS commentWriterNo
+	    FROM
+	        TB_CHALLENGE_COMMENT cc
+	    JOIN
+	        TB_USER u ON cc.COMMENT_WRITER = u.USER_NO
+	    JOIN
+	        TB_CHALLENGE c ON cc.REF_BOARD_NO = c.CHALLENGE_NO
+	    WHERE
+	        cc.REF_BOARD_NO = #{refBoardNo}
+	    ORDER BY
+	        cc.COMMENT_DATE DESC
 	</select>
+	
+	<select id="selectCommentWriterNo" parameterType="long" resultType="long">
+    	SELECT
+    		COMMENT_WRITER
+    	FROM
+    		TB_CHALLENGE_COMMENT
+    	WHERE
+    		COMMENT_NO = #{commentNo}
+	</select>
+	
+	<update id="updateComment">
+    	UPDATE
+    		TB_CHALLENGE_COMMENT
+    	SET
+    		COMMENT_CONTENT = #{commentContent},
+    	    COMMENT_FILE_URL = #{commentFileUrl}
+    	WHERE
+    		COMMENT_NO = #{commentNo}
+	</update>
+	
+	<delete id="deleteComment" parameterType="long">
+    	DELETE
+    	FROM
+    		TB_CHALLENGE_COMMENT
+    	WHERE
+    		COMMENT_NO = #{commentNo}
+	</delete>
 </mapper>
