@@ -16,7 +16,7 @@
 		JOIN
 			TB_USER U ON (L.LOG_USER_ID = U.USER_ID)
 		ORDER BY
-			L.LOG_DATE, L.LOG_NO DESC
+			L.LOG_DATE DESC
 	</select>
 	
 	<insert id="insertLog"

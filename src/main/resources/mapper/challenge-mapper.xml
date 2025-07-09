@@ -10,6 +10,7 @@
     	CHALLENGE_FILE_URL challengeFileUrl,
     	USER_ID challengeAuthor,
     	CHALLENGE_ACTIVE status,
+    	CHALLENGE_VIEWS challengeViews,
     	CHALLENGE_DATE challengeDate
 	</sql>
 	
@@ -55,9 +56,7 @@
 			parameterType="long"
 			resultType="com.kh.dotogether.challenge.model.dto.ChallengeDTO">
 		SELECT
-		<include refid="challengeColumn" />
-			CHALLENGE_CONTENT challengeContent,
-			CHALLENGE_FILE_URL challengeFileUrl
+			<include refid="challengeColumn" />
 		FROM
 			TB_CHALLENGE
 		JOIN
@@ -73,5 +72,14 @@
     		CHALLENGE_ACTIVE = #{status}
     	WHERE
     		CHALLENGE_NO = #{challengeNo}
+	</update>
+	
+	<update id="incrementViewCount">
+		UPDATE
+			TB_CHALLENGE
+		SET
+			CHALLENGE_VIEWS = CHALLENGE_VIEWS + 1
+		WHERE
+			CHALLENGE_NO = #{challengeNo}
 	</update>
 </mapper>

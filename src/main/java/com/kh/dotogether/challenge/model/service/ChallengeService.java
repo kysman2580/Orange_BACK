@@ -12,10 +12,13 @@ public interface ChallengeService {
 	
 	List<ChallengeDTO> findAll(int pageNo);
 	
+	ChallengeDTO findAndIncrementViews(Long challengeNo);
+	
 	ChallengeDTO findById(Long challengeNo);
 	
 	ChallengeDTO update(ChallengeDTO challenge, MultipartFile file);
 	
 	void markAsCompleted(Long challengeNo);
+	
 	
 }

@@ -24,6 +24,6 @@ public interface CommentMapper {
 	
 	void updateComment(CommentDTO comment);
 	
-	void deleteComment(Long commentNo);
+	void softDeleteComment(Long commentNo);
 	
 }
